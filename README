@@ -1,0 +1,4 @@
+This firmware is for PRM8060 and PRM8070.
+Source code is originaly compiled with ASEM 51. Use the command :
+	asem 8060.a51 
+	or asem 8070.a51
