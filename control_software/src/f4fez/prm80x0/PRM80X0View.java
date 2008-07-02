@@ -131,12 +131,12 @@ public class PRM80X0View extends FrameView {
 
             try {
                 // Load lcd font
-                InputStream lcdFontStream = this.getClass().getClassLoader().getResourceAsStream("prm80x0/resources/lcd.ttf");
+                InputStream lcdFontStream = this.getClass().getClassLoader().getResourceAsStream("f4fez/prm80x0/resources/lcd.ttf");
                 Font lcdFont = Font.createFont(Font.TRUETYPE_FONT, lcdFontStream).deriveFont(32f);
                 this.freqLabel.setFont(lcdFont);
                 this.chanLabel.setFont(lcdFont);
-                lcdFontStream = this.getClass().getClassLoader().getResourceAsStream("prm80x0/resources/lcd.ttf");
-                lcdFont = Font.createFont(Font.TRUETYPE_FONT, lcdFontStream).deriveFont(16f);
+                lcdFontStream = this.getClass().getClassLoader().getResourceAsStream("f4fez/prm80x0/resources/lcd.ttf");
+                lcdFont = Font.createFont(Font.TRUETYPE_FONT, lcdFontStream).deriveFont(20f);
                 this.txFreqLabel.setFont(lcdFont);
             } catch (Exception ex) {
                 Logger.getLogger(PRM80X0View.class.getName()).log(Level.SEVERE, null, ex);
@@ -252,14 +252,17 @@ public class PRM80X0View extends FrameView {
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         freqLabel.setForeground(resourceMap.getColor("freqLabel.foreground")); // NOI18N
+        freqLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         freqLabel.setText(resourceMap.getString("freqLabel.text")); // NOI18N
+        freqLabel.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
         freqLabel.setName("freqLabel"); // NOI18N
         jPanel1.add(freqLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 160, 30));
 
         chanLabel.setForeground(resourceMap.getColor("chanLabel.foreground")); // NOI18N
         chanLabel.setText(resourceMap.getString("chanLabel.text")); // NOI18N
+        chanLabel.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
         chanLabel.setName("chanLabel"); // NOI18N
-        jPanel1.add(chanLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 10, 50, 50));
+        jPanel1.add(chanLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 10, 50, 30));
 
         hpLabel.setIcon(resourceMap.getIcon("hpLabel.icon")); // NOI18N
         hpLabel.setText(resourceMap.getString("hpLabel.text")); // NOI18N
@@ -274,9 +277,9 @@ public class PRM80X0View extends FrameView {
         txFreqLabel.setForeground(resourceMap.getColor("txFreqLabel.foreground")); // NOI18N
         txFreqLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         txFreqLabel.setText(resourceMap.getString("txFreqLabel.text")); // NOI18N
-        txFreqLabel.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        txFreqLabel.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
         txFreqLabel.setName("txFreqLabel"); // NOI18N
-        jPanel1.add(txFreqLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, 140, 20));
+        jPanel1.add(txFreqLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, 160, 20));
 
         mainPanel.add(jPanel1);
 
@@ -515,7 +518,7 @@ public class PRM80X0View extends FrameView {
             .add(statusPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(statusMessageLabel)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 320, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 334, Short.MAX_VALUE)
                 .add(progressBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(statusAnimationLabel)

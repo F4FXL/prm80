@@ -34,7 +34,9 @@
             <Component class="javax.swing.JLabel" name="freqLabel">
               <Properties>
                 <Property name="foreground" type="java.awt.Color" resourceKey="freqLabel.foreground"/>
+                <Property name="horizontalAlignment" type="int" value="4"/>
                 <Property name="text" type="java.lang.String" resourceKey="freqLabel.text"/>
+                <Property name="verticalAlignment" type="int" value="3"/>
                 <Property name="name" type="java.lang.String" value="freqLabel" noResource="true"/>
               </Properties>
               <Constraints>
@@ -47,11 +49,12 @@
               <Properties>
                 <Property name="foreground" type="java.awt.Color" resourceKey="chanLabel.foreground"/>
                 <Property name="text" type="java.lang.String" resourceKey="chanLabel.text"/>
+                <Property name="verticalAlignment" type="int" value="3"/>
                 <Property name="name" type="java.lang.String" value="chanLabel" noResource="true"/>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-                  <AbsoluteConstraints x="260" y="10" width="50" height="50"/>
+                  <AbsoluteConstraints x="260" y="10" width="50" height="30"/>
                 </Constraint>
               </Constraints>
             </Component>
@@ -84,12 +87,12 @@
                 <Property name="foreground" type="java.awt.Color" resourceKey="txFreqLabel.foreground"/>
                 <Property name="horizontalAlignment" type="int" value="4"/>
                 <Property name="text" type="java.lang.String" resourceKey="txFreqLabel.text"/>
-                <Property name="verticalAlignment" type="int" value="1"/>
+                <Property name="verticalAlignment" type="int" value="3"/>
                 <Property name="name" type="java.lang.String" value="txFreqLabel" noResource="true"/>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-                  <AbsoluteConstraints x="10" y="40" width="140" height="20"/>
+                  <AbsoluteConstraints x="10" y="40" width="160" height="20"/>
                 </Constraint>
               </Constraints>
             </Component>
