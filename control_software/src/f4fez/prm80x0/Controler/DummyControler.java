@@ -259,5 +259,9 @@ public class DummyControler implements PRMControler{
         return this.image;
     }
 
+    public ChannelList getChannels() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 
 }

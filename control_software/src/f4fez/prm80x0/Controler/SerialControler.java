@@ -349,4 +349,7 @@ public class SerialControler implements PRMControler{
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    public ChannelList getChannels() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

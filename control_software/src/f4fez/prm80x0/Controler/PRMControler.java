@@ -209,12 +209,12 @@ public interface PRMControler {
     public int getMinorFirmwareVersion() throws CommunicationException;
     
     /**
-     * Transfert la RAM vers EEPROM
+     * Copy the RAM to the EEPROM
      */
     public void RAM2EEPROM() throws CommunicationException;
     
     /**
-     * Transfert l'EEPROM vers la RAM
+     * Copy the EEPROM to the RAM
      */
     public void EEPROM2RAM() throws CommunicationException;
     
@@ -223,4 +223,10 @@ public interface PRMControler {
      * @return
      */
     public MemoryImage getMemoryImage();
+
+    /**
+     * Obtain the list of channels
+     * @return list of channels
+     */
+    public ChannelList getChannels();
 }
