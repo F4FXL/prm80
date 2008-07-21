@@ -428,10 +428,13 @@ terminal_cont:
                                                ; - La convertir en majuscule.
                                                
                                                ; 
-tch_diese:       CJNE       A,#'#',tch_1       ; - Touche [#] ?
+tch_diese:       CJNE       A,#'#',tch_0       ; - Touche [#] ?
                  MOV        A,#'!'             ;   Renvoyer un point 
                  call       Write_RS232        ;   d'exclamation "!".
                  JMP        tch_suiv           ; 
+
+tch_0:           CJNE       A,#'0',tch_1       ; - Touche [0] ?
+                 jmp	    0		       ;   Reset
                                                ; 
 tch_1:           CJNE       A,#'1',tch_2       ; - Touche [1] ?
                  MOV        DPTR,#Message03    ;   afficher l'état du port P1.
@@ -1120,6 +1123,7 @@ MessageVersion: DB   "PRM8060 V3.0", 0
 MessageAide:  DB   "H",0Dh,0Ah
               DB   " Commandes disponibles :",0Dh,0Ah
               DB   " [*] = Quitter le moniteur et rendre la main.",00Dh,00Ah
+              DB   " [0] = Reset.",0Dh,0Ah
               DB   " [1] a [5] = Afficher l'etat du port P1 a P5.",0Dh,0Ah
               DB   " [A] = Initialise la liaison serie en 1200 bauds.",0Dh,0Ah
               DB   " [B] = Initialise la liaison serie en 4800 bauds.",0Dh,0Ah

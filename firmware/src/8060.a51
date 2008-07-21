@@ -41,7 +41,7 @@ disp_hold	EQU	38h	; Sauvegarde de de l'affichage des symboles
 mode		EQU	21h	; Mode courant
 				; b0: Squelch		b1: puissance
 				; b2: Squelch ouvert	b3: TX
-				; b4: 			b5: Appui long memorise
+				; b4: PLL verouille	b5: Appui long memorise
 				; b6: Anti-rebond actif	b7: Rafraichier lcd
 
 chan_state	EQU	22h	; Option du canal
@@ -178,7 +178,7 @@ CH_enter        EQU     charType.6    ; - Caractere recu = ENTER.
 ; Chargement des fonctions annexe
 ;----------------------------------------
  $include (inc_front_8060.a51)	; Fonctions de gestion de l'afficheur
- $include (inc_sys.a51)	; Diverse fonctions systeème
+ $include (inc_sys.a51)	; Diverse fonctions systeme
  $include (inc_mem.a51) ; Gestion des cannaux
  $include (inc_serial.a51) ; Gestion du port serie
 

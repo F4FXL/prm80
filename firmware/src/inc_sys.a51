@@ -165,15 +165,18 @@ ls_lp0:
 	jmp	ls_error
 
 ls_end:
+	setb	mode.4
 	ret
 	
 ls_error:
+	clr	mode.4
 	mov	r0, #0eeh
 	call	lcd_clear_digits_r
 	call	lcd_print_hex
 	call	load_lcd
 lse_lp:
 	call	wdt_reset
+	call	TERMINAL
 	jmp	lse_lp
 
 
@@ -230,6 +233,10 @@ switch_power:
 	call	load_serial_latch	
 	ret
 
+;----------------------------------------
+; Chargement de la puissance depuis
+; l'etat de "mode"
+;----------------------------------------
 load_power:
 	mov	a, #0feh
 	anl	serial_latch_lo, a
@@ -255,12 +262,14 @@ check1750:
 	call	wdt_reset
                          ; ### debut de la boucle ###
 test_ptt_ils:    
-	JB       P4.0,fin1750     	; Si PTT relache (ï¿½ "1"), ou
-        MOV      A,P5             	; 1750 relache (ï¿½ "1"), fin
-        JB       ACC.5,fin1750    	; de la routine ; sinon : 
+	JB       P4.0,fin1750     	; Si PTT relache (a "1"), ou
+	call	 check_button_1750	; Bouton 1750 micro relache (a "1")ou
+	mov	 A, P5			; Bouton 1750 facade relache, fin
+	anl	 c, acc.5
+	jb	 psw.7, fin1750		; de la routine ; sinon : 
         CPL      serial_latch_lo.2    	; complementer la sortie 
         LCALL    load_serial_latch	; alarme, puis attendre 
-        MOV      R0,#40			; suffisamment pour que la
+        MOV      R0,#29			; suffisamment pour que la
 tempo1750:
 	DJNZ     R0,tempo1750     	; boucle totale dure 286 us 
 ;	NOP                         	; (sinon il manquerait 134 us),
@@ -295,7 +304,6 @@ tmp_bcl:         NOP                      ;  ;;  1 Durée de la boucle : 10µs.
 ; "Tempo50ms" : Realise une temporisation
 ;   de 50 ms environ (peu critique).
 ;----------------------------------------
-
 Tempo50ms:       PUSH       1             ; Sauvegarde R1 sur la pile.
                  MOV        R1,#25        ; Nombre de boucles : 25.
 tmp_bcl50:       LCALL      Tempo2ms      ; 25 x 2ms = 50 ms.
@@ -306,7 +314,6 @@ tmp_bcl50:       LCALL      Tempo2ms      ; 25 x 2ms = 50 ms.
 ;----------------------------------------
 ;  Routines I2C 
 ;----------------------------------------
-
 ; "I2C_Start" :
 
 I2C_Start:       SETB       SDA            ; 

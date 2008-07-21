@@ -109,7 +109,7 @@ lcd_print_dec:
 	call	lcd_print_digit1
 	ret
 ;----------------------------------------
-; Affichage d'une valeur en hexadécimal
+; Affichage d'une valeur en hexadecimal
 ;----------------------------------------
 ; Valeur dans R0
 lcd_print_hex:
@@ -200,6 +200,19 @@ cb_end:
 	mov	a, b
 	ret
 
+;----------------------------------------
+; Test du bouton 1750
+; Avec un call : 20us
+;----------------------------------------
+check_button_1750:
+	mov	b, #0
+	call	wdt_reset
+	mov	dptr, #0d000h
+	movx	a, @dptr
+	mov	r0, a
+	mov	c, acc.2
+	ret
+	
 ;----------------------------------------
 ; Tables pour l'afficheur
 ;----------------------------------------
