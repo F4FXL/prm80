@@ -17,6 +17,18 @@ $NOBUILTIN
 $NOSYMBOLS
 $NOMOD51
 $NOPAGING
+
+;+++++++++++++++++++++++++++++++++++++++
+; Check if TARGET is defined if not
+;  end with error
+IFNDEF TARGET
+
+$ERROR(TARGET not defined)
+END
+
+ELSE
+
+
 $INCLUDE (83c552.mcu)
 
 ;----------------------------------------
@@ -177,7 +189,10 @@ CH_enter        EQU     charType.6    ; - Caractere recu = ENTER.
 ;----------------------------------------
 ; Chargement des fonctions annexe
 ;----------------------------------------
- $include (inc_front_8060.a51)	; Fonctions de gestion de l'afficheur
+IF TARGET EQ 8060
+ $include (inc_front_8060.a51)	; Fonctions de gestion de l'afficheur et des touches
+ENDIF
+
  $include (inc_sys.a51)	; Diverse fonctions systeme
  $include (inc_mem.a51) ; Gestion des cannaux
  $include (inc_serial.a51) ; Gestion du port serie
@@ -465,4 +480,4 @@ tx_lp:
 $include (inc_config.a51) ; Chargement de la configuration
 	end
 
-
+ENDIF ; IFNDEF TARGET
