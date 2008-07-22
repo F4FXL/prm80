@@ -287,14 +287,8 @@ fin1750:
 Tempo2ms:                                 ;    2 - Le "CALL" de la routine.
                  PUSH       0             ;    2 - Sauvegarde R0 sur la pile.
                  MOV        R0,#199       ;    1 - Nombre de boucles : 199.
-tmp_bcl:         NOP                      ;  ;;  1 Durée de la boucle : 10µs.
-                 NOP                      ;  ;;  1
-                 NOP                      ;  ;;  1
-                 NOP                      ;  ;;  1
-                 NOP                      ;  ;;  1
-                 NOP                      ;  ;;  1
-                 NOP                      ;  ;;  1
-                 NOP                      ;  ;;  1
+tmp_bcl:         	                  ;  ;;  1 Durée de la boucle : 10µs.
+		 call	    wdt_reset
                  DJNZ       R0,tmp_bcl    ;  ;;  2
                  NOP                      ; 1 - Attendre une µs.
                  POP        0             ; 2 - On récupère R0 sur la pile.
@@ -310,6 +304,20 @@ tmp_bcl50:       LCALL      Tempo2ms      ; 25 x 2ms = 50 ms.
                  DJNZ       R1,tmp_bcl50  ; 
                  POP        1             ; On récupère R1 sur la pile.
                  RET                      ; Fin de routine...
+
+;----------------------------------------
+; Bip 200ms
+;----------------------------------------
+bip:
+	push	0
+	mov	pwm1, #127
+	mov	r0, #4
+bip_loop:
+	call	Tempo50ms
+	djnz	r0, bip_loop
+	mov	pwm1, #0
+	pop	0
+	ret
 		 
 ;----------------------------------------
 ;  Routines I2C 

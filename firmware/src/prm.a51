@@ -415,11 +415,14 @@ b_but1l:
 	jmp	b_endbut
 b_but2l:
 	cjne	a, #2, b_but3l
-	call	switch_power
+	call	switch_power	
+	call	bip
 	jmp	b_endbut
+	
 b_but3l:
 	cjne	a, #4, b_but4l
 	call	switch_shift_mode
+	call	bip
 	jmp	b_endbut
 b_but4l:
 	cjne	a, #8, b_endbut
