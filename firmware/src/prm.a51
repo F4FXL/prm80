@@ -126,7 +126,7 @@ but_long_duration	EQU	15
 but_repeat_duration	EQU	3
 but_repeat_mask		EQU	09h
 
-pwm_freq	EQU	0
+pwm_freq	EQU	28
 
 ; Roles des bits du registre d'etat du port serie "RS232status" :
 RD_err		EQU	RS232status.0 ; - Erreur lecture dans buffer RX.
@@ -190,12 +190,12 @@ CH_enter        EQU     charType.6    ; - Caractere recu = ENTER.
 ; Chargement des fonctions annexe
 ;----------------------------------------
 IF TARGET EQ 8060
- $include (inc_front_8060.a51)	; Fonctions de gestion de l'afficheur et des touches
+ $include (inc_8060.a51)	; Fonctions de gestion de l'afficheur et des touches
 ENDIF
 
  $include (inc_sys.a51)	; Diverse fonctions systeme
  $include (inc_mem.a51) ; Gestion des cannaux
- $include (inc_serial.a51) ; Gestion du port serie
+ $include (inc_ser.a51) ; Gestion du port serie
 
 ;----------------------------------------
 ; Initialisation de bas niveau
@@ -222,9 +222,9 @@ init:
 	mov	pwmp, r0
 
 	; Initialisation des variables
-	mov	lcd_data0, #0
-	mov	lcd_data1, #0
-	mov	lcd_data2, #0
+	mov	lcd_data0, #0ffh
+	mov	lcd_data1, #0ffh
+	mov	lcd_data2, #0ffh
 	
 	mov	lock, #00
 	mov	vol_hold, #01h 		; Pour etre a peut pres sur de charger le volume au premier lancement
@@ -237,28 +237,32 @@ init:
 ;----------------------------------------
 ; Initialisation de haut niveau
 ;----------------------------------------
-	; Verifier si un reset est demande
-	call	check_buttons			; Charger etat bouton
-	cjne	a, #09h, init_no_reset
-	call	load_ram_default	 	; reset memory
-init_no_reset:
-
-	; Chargement parametre
-	call	load_parameters
+	call	load_lcd
 
 	; Initialisation du verrou
 	mov	serial_latch_lo, #81h
 	mov	serial_latch_hi, #31h
 	call	load_serial_latch
-	
-	; Initialisation de la liaison serie
-	CALL	InitRS232_4800
-	
+
+	; Verifier si un reset est demande
+	call	check_buttons			; Charger etat bouton
+	cjne	a, #09h, init_no_reset
+	mov	pwm1, #127
+	call	load_ram_default	 	; reset memory
+	mov	pwm1, #0
+init_no_reset:
+
+	; Chargement parametre
+	call	load_parameters
+
 	; Chargement de l'etat du poste
 	call	load_state
 
 	; Chargement du volume
 	call	set_volume
+
+	; Initialisation de la liaison serie
+	CALL	InitRS232_4800
 
 	call	wdt_reset
 	
@@ -477,7 +481,7 @@ tx_lp:
 	ret
 
 
-$include (inc_config.a51) ; Chargement de la configuration
+$include (inc_conf.a51) ; Chargement de la configuration
 	end
 
 ENDIF ; IFNDEF TARGET
