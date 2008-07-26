@@ -33,7 +33,9 @@ Check if asem51 is correctly installed and binaries are in the path.
 Under Linux :
 	just type "make" to build the source
     
-Under Windows
+Under Windows / Dos
+	Make sure asem51 binaries are in the path, if not, you can also copy 
+	asem.exe and hexbin.exe in the "src" directory
 	Run "build.bat"
 
 To build it manualy
