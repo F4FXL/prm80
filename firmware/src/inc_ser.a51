@@ -520,7 +520,7 @@ tch_I:           CJNE       A,#'I',tch_K       ; - Touche [I] ?
                  call       WaitRS232          ;   confirmation par 
                  call       AnalyseChar        ;   l'utilisateur.
                  MOV        A,RS_ASCmaj        ; 
-                 CJNE       A,#'O',stop_init   ; 
+                 CJNE       A,#'Y',stop_init   ; 
                  call       load_ram_default   ; 
 		 call	    load_state
 		 call	    update_lcd
@@ -867,7 +867,7 @@ pc_cont:
         JNB     XXDD_OK,fin_progchan
         MOV     r2,A			; PLL LSB dans R2
 	call	CRLF_RS232
-	MOV     DPTR,#Message34
+	MOV     DPTR,#Message20
         CALL	MESS_RS232
         CALL	XXinRS232
         JNB     XXDD_OK,fin_progchan
@@ -889,7 +889,7 @@ pc_cont:
         CALL    AnalyseChar
         MOV     A,RS_ASCmaj
 	call	CRLF_RS232
-        CJNE    A,#'O',fin_progchan 
+        CJNE    A,#'Y',fin_progchan 
 	
 	; Creation d'un canal
 	inc	r4
@@ -1078,42 +1078,41 @@ sf_end:
 ; Messages ASCII predefinis, pour le dialogue par la liaison serie :
 
 Message01:    DB   00Dh,00Ah
-              DB   "Pilotage du PRM8060 (c) F4FEZ / F8EGQ ",00Dh,00Ah
-              DB   "Version 3.0, XX/03/2007.",00Dh,00Ah
+              DB   "PRM8060 Firmware (c) F4FEZ / F8EGQ ",00Dh,00Ah
+              DB   "Version 3.0, 01/09/2008.",00Dh,00Ah
 	      DB   ">",0
-Message02:    DB   "Fin du mode ",34,"Commandes",34,"...",00Dh,00Ah,0 
 Message03:    DB   "P1 = $",0 
 Message04:    DB   "P2 = $",0 
 Message05:    DB   "P3 = $",0 
 Message06:    DB   "P4 = $",0 
 Message07:    DB   "P5 = $",0 
-Message08:    DB   "Verrou = $",0 
+Message08:    DB   "Latch = $",0 
 Message09:    DB   " ?",0 
 Message10:    DB   00Dh,00Ah,">",0 
 Message11:    DB   00Dh,00Ah
-              DB   "Terminal actif. Taper 'H' pour l'aide",00Dh,00Ah,00Dh,00Ah,">",0 
+              DB   "Type 'H' for help",00Dh,00Ah,00Dh,00Ah,">",0 
 Message12:    DB   00Dh,00Ah,"Page $",0 
 Message13:    DB   "/$7F : ",0 
-Message14:    DB   "Contenu de l'EEPROM 24C16 : ",00Dh,00Ah,0 
+Message14:    DB   "24C16 EEPROM data : ",00Dh,00Ah,0 
 Message15:    DB   " OK !",0 
-Message16:    DB   "Contenu des deux premiers ko de la RAM externe : "
+Message16:    DB   "First 2Kb data from external RAM : "
               DB   00Dh,00Ah,0 
-Message17:    DB   "Adresse de la RAM externe $XXXX : $",0 
+Message17:    DB   "External RAM adress $XXXX : $",0 
 Message18:    DB   "Squelch : ",0
-Message19:    DB   "Canal : ",0
-Message20:    DB   "Etat du canal : ",0
-Message21:    DB   "Frequence RX : ",0
-Message22:    DB   "Frequence TX : ",0
-Message26:    DB   "Re-initialiser la RAM et les canaux (O/N) ? ",0 
-Message28:    DB   "N",00Dh,00Ah,"commande annulee...",00Dh,00Ah,0
-Message29:    DB   "Afficher les 256 octets de la RAM interne : ",0
-Message30:    DB   "erreur I2C numero ",0
-Message31:    DB   "Liste des cannaux :",0Dh,0Ah,0
-Message32:    DB   "Canal a pogrammer : ",0
-Message33:    DB   "Valeur de la PLL a charger : $",0
-Message34:    DB   "Etat du canal : $", 0
-Message35:    DB   "Le canal n'existe pas. Creer un nouveau canal (O/N) ? ", 0
-Message36:    DB   "Nombre de canaux actifs (00 a 99) : ",0
+Message19:    DB   "Channel : ",0
+Message20:    DB   "Channel state : $",0
+Message21:    DB   "RX frequency : ",0
+Message22:    DB   "TX frequency : ",0
+Message26:    DB   "Erase RAM and channels (Y/N) ? ",0 
+Message28:    DB   "N",00Dh,00Ah,"command canceled...",00Dh,00Ah,0
+Message29:    DB   "Display the 256 bytes from internal RAM : ",0
+Message30:    DB   "error I2C number ",0
+Message31:    DB   "Channels list :",0Dh,0Ah,0
+Message32:    DB   "Channel to set : ",0
+Message33:    DB   "PLL value to load : $",0
+
+Message35:    DB   "This channel number doesn't exist. Add new channel (Y/N) ? ", 0
+Message36:    DB   "Channels number (00 to 99) : ",0
 Message37:    DB   "Lock : ",0
 Message38:    DB   "Volume : ",0
 Message39:    DB   "Mode : ",0
@@ -1122,30 +1121,29 @@ MessageVersion: DB   "PRM8060 V3.0", 0
 
 MessageAide:  DB   "H",0Dh,0Ah
               DB   " Commandes disponibles :",0Dh,0Ah
-              DB   " [*] = Quitter le moniteur et rendre la main.",00Dh,00Ah
               DB   " [0] = Reset.",0Dh,0Ah
-              DB   " [1] a [5] = Afficher l'etat du port P1 a P5.",0Dh,0Ah
-              DB   " [A] = Initialise la liaison serie en 1200 bauds.",0Dh,0Ah
-              DB   " [B] = Initialise la liaison serie en 4800 bauds.",0Dh,0Ah
-              DB   " [C] = Afficher la liste des canaux.",0Dh,0Ah
-              DB   " [D] = Definit l'octet d'etat du systeme.",0Dh,0Ah
-              DB   " [E] = Etat du systeme (Mode-Chan-Chanstate-Sql-Vol-Lock-RX freq-TX freq).",0Dh,0Ah
-              DB   " [F] = Definir le squelch.",0Dh,0Ah
-              DB   " [H] = Afficher cette page d'aide.",0Dh,0Ah
-              DB   " [I] = Initialiser la RAM (RAZ).",0Dh,0Ah
-              DB   " [K] = Modification de l'octet de bloquage du syteme.",0Dh,0Ah
-              DB   " [L] = Affichage de l'etat des discrets (latch).",0Dh,0Ah
-              DB   " [M] = Modifier manuellement la RAM externe.",0Dh,0Ah
-              DB   " [N] = Definir le canal courant.",0Dh,0Ah
-              DB   " [O] = Definir le volume.",0Dh,0Ah
-	      DB   " [P] = Programmation d'un canal.",0Dh,0Ah
-	      DB   " [Q] = Definir le nombre de cannaux actifs.",0Dh,0Ah
-	      DB   " [R] = Definir les frequences du synthetiseur.",0Dh,0Ah
-              DB   " [U] = Afficher la RAM interne du 80C552.",0Dh,0Ah
-              DB   " [S] = Transferer toute L'EEPROM en RAM externe.",0Dh,0Ah
-              DB   " [T] = Definir l'etat du canal courant.",0Dh,0Ah
-              DB   " [V] = Afficher la version du firmware.",0Dh,0Ah
-              DB   " [X] = Programmer toute L'EEPROM depuis la RAM.",0Dh,0Ah
-              DB   " [Y] = Afficher les 2 ko de l'EEPROM I2C 24C16.",0Dh,0Ah
-              DB   " [Z] = Afficher la RAM externe ($0000 a $07FF).",0Dh,0Ah,0
+              DB   " [1] a [5] = Show 80c552 port state P1 to P5.",0Dh,0Ah
+              DB   " [A] = Set serial communication to 1200 bps.",0Dh,0Ah
+              DB   " [B] = Set serial communication to 4800 bps.",0Dh,0Ah
+              DB   " [C] = Print channels list.",0Dh,0Ah
+              DB   " [D] = Set system byte.",0Dh,0Ah
+              DB   " [E] = Show system state (Mode-Chan-Chanstate-Sql-Vol-Lock-RX freq-TX freq).",0Dh,0Ah
+              DB   " [F] = Set squelch.",0Dh,0Ah
+              DB   " [H] = Print this help page.",0Dh,0Ah
+              DB   " [I] = Erase and init RAM and EEPROM.",0Dh,0Ah
+              DB   " [K] = Set lock byte.",0Dh,0Ah
+              DB   " [L] = Print latch state.",0Dh,0Ah
+              DB   " [M] = Edit external RAM manualy.",0Dh,0Ah
+              DB   " [N] = Set current channel.",0Dh,0Ah
+              DB   " [O] = Set volume.",0Dh,0Ah
+	      DB   " [P] = Edit/Add channel.",0Dh,0Ah
+	      DB   " [Q] = Set channels number.",0Dh,0Ah
+	      DB   " [R] = Set synthetiser frequencies.",0Dh,0Ah
+              DB   " [U] = Print 80c552 internal RAM.",0Dh,0Ah
+              DB   " [S] = Copy EEPROM to external RAM.",0Dh,0Ah
+              DB   " [T] = Set current channel state.",0Dh,0Ah
+              DB   " [V] = Print firmware version.",0Dh,0Ah
+              DB   " [X] = Copy external RAM to EEPROM.",0Dh,0Ah
+              DB   " [Y] = Print first 2 kb from the EEPROM I2C 24c16.",0Dh,0Ah
+              DB   " [Z] = Print external RAM ($0000 to $07FF).",0Dh,0Ah,0
 	      

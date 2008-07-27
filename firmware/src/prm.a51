@@ -247,9 +247,8 @@ init:
 	; Verifier si un reset est demande
 	call	check_buttons			; Charger etat bouton
 	cjne	a, #09h, init_no_reset
-	mov	pwm1, #127
+	call	bip
 	call	load_ram_default	 	; reset memory
-	mov	pwm1, #0
 init_no_reset:
 
 	; Chargement parametre

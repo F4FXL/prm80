@@ -130,10 +130,12 @@ r_end:
 load_parameters:
 	call	test_checksums		;Test si la ram est valide
 	jz	lp_load		
+	call	bip
 	call	read_eeprom		; Si RAM invalide charger eeprom et retester
 	call	test_checksums		
 	jz	lp_load
 	call	load_ram_default	; Si eeprom invalide egalement alors reinit usine
+	call	bip
 	
 lp_load:
 	;Charger les donnees de la ram
