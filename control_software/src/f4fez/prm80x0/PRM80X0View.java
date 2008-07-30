@@ -18,6 +18,7 @@
 
 package f4fez.prm80x0;
 
+import f4fez.prm80x0.ui.channelmanager.ChannelManager;
 import java.awt.Dimension;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -647,7 +648,7 @@ public class PRM80X0View extends FrameView {
 
     private void channelManagerMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_channelManagerMenuItemActionPerformed
             JFrame mainFrame = PRM80X0App.getApplication().getMainFrame();
-            ChannelManager cm = new ChannelManager(mainFrame, true);
+            ChannelManager cm = new ChannelManager(mainFrame, true, this.vdf.getPRMControler().getChannels());
             cm.setLocationRelativeTo(mainFrame);
             cm.setVisible(true);
     }//GEN-LAST:event_channelManagerMenuItemActionPerformed

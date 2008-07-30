@@ -23,14 +23,14 @@ package f4fez.prm80x0.Controler;
  */
 public class Channel {
 
-    private String id;
+    private int id;
 
     /**
      * Get the value of id
      *
      * @return the value of id
      */
-    public String getId() {
+    public int getId() {
         return id;
     }
 
@@ -39,7 +39,7 @@ public class Channel {
      *
      * @param id new value of id
      */
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 

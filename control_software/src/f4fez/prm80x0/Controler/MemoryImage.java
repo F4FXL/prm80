@@ -138,5 +138,12 @@ public class MemoryImage {
         this.iram[adress] = value;
     }
     
+    /**
+     * Copy the first 2kByte from the RAM to the EEPROM
+     */
+    public void copyRam2EEPROM() {
+        for (int i=0; i < MemoryImage.EEPROM_SIZE; i++)
+            this.eeprom[i] = this.ram[i];
+    }
     
 }

@@ -36,6 +36,7 @@ public class ChannelList{
 
     public void addChannel(Channel channel) {
         this.list.add(channel);
+        channel.setId(this.list.indexOf(channel));
     }
 
     public int countChannel() {
