@@ -251,7 +251,7 @@ load_ram_default_config:
 	call	load_config_area_checksum
 	mov	dph, #ram_area_config
 	mov	dpl, #ram_config_sum
-	movx	a, @dptr
+	movx	@dptr, a
 	ret
 
 ;----------------------------------------
@@ -416,6 +416,7 @@ load_state_area_checksum:
 	mov	dph, #ram_area_state
 	mov	dpl, #0
 	mov	r0, #0
+	mov	a, #0
 lsac_loop:
 	call	wdt_reset
 	movx	a, @dptr
@@ -433,6 +434,7 @@ load_freq_area_checksum:
 	mov	dph, #ram_area_freq
 	mov	dpl, #0
 	mov	r0, #0
+	mov	a, #0
 lfac_loop:
 	call	wdt_reset
 	movx	a, @dptr
@@ -450,6 +452,7 @@ load_config_area_checksum:
 	mov	dph, #ram_area_config
 	mov	dpl, #10
 	mov	r0, #0
+	mov	a, #0
 lcac_loop:
 	call	wdt_reset
 	movx	a, @dptr
