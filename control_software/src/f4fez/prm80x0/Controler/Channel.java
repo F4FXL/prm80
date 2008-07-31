@@ -25,6 +25,10 @@ public class Channel {
 
     private int id;
 
+    public Channel() {
+        this.id = -1;
+    }
+
     /**
      * Get the value of id
      *

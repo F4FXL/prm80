@@ -21,6 +21,7 @@ package f4fez.prm80x0.ui.channelmanager;
 
 import f4fez.prm80x0.Controler.Channel;
 import f4fez.prm80x0.Controler.ChannelList;
+import f4fez.prm80x0.ui.channelmanager.ChannelModel;
 import org.jdesktop.application.Action;
 
 /**
@@ -50,8 +51,6 @@ public class ChannelManager extends javax.swing.JDialog {
         cancelButton = new javax.swing.JButton();
         tableScroll = new javax.swing.JScrollPane();
         table = new javax.swing.JTable();
-        topPanel = new javax.swing.JPanel();
-        addButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(f4fez.prm80x0.PRM80X0App.class).getContext().getResourceMap(ChannelManager.class);
@@ -78,36 +77,11 @@ public class ChannelManager extends javax.swing.JDialog {
 
         tableScroll.setName("tableScroll"); // NOI18N
 
-        table.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null}
-            },
-            new String [] {
-                "Number", "Frequency (RX)", "Shift", "Comments"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.Boolean.class, java.lang.String.class
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-        });
+        table.setModel(new ChannelModel(this.channels));
         table.setName("table"); // NOI18N
         tableScroll.setViewportView(table);
 
         getContentPane().add(tableScroll, java.awt.BorderLayout.CENTER);
-
-        topPanel.setName("topPanel"); // NOI18N
-        topPanel.setLayout(new javax.swing.BoxLayout(topPanel, javax.swing.BoxLayout.LINE_AXIS));
-
-        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(f4fez.prm80x0.PRM80X0App.class).getContext().getActionMap(ChannelManager.class, this);
-        addButton.setAction(actionMap.get("addChannel")); // NOI18N
-        addButton.setName("addButton"); // NOI18N
-        topPanel.add(addButton);
-
-        getContentPane().add(topPanel, java.awt.BorderLayout.PAGE_START);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -123,13 +97,11 @@ public class ChannelManager extends javax.swing.JDialog {
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton addButton;
     private javax.swing.JPanel buttonsBar;
     private javax.swing.JButton cancelButton;
     private javax.swing.JButton saveButton;
     private javax.swing.JTable table;
     private javax.swing.JScrollPane tableScroll;
-    private javax.swing.JPanel topPanel;
     // End of variables declaration//GEN-END:variables
 
     private ChannelList channels;

@@ -54,6 +54,8 @@ public class DummyControler implements PRMControler{
     
     private byte[] ram;
     private byte[] eeprom;
+
+    private ChannelList channels;
     
     private MemoryImage image;
     
@@ -176,6 +178,7 @@ public class DummyControler implements PRMControler{
         ram = new byte[32768];
         eeprom = new byte[2048];
 
+        this.channels = new ChannelList();
         ArrayList<Integer> freq = new ArrayList<Integer>();
         freq.add(144100000);
         freq.add(145600000);
@@ -260,7 +263,7 @@ public class DummyControler implements PRMControler{
     }
 
     public ChannelList getChannels() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return this.channels;
     }
 
 
