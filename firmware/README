@@ -35,7 +35,7 @@ Under Linux :
     
 Under Windows / Dos
 	Make sure asem51 binaries are in the path, if not, you can also copy 
-	asem.exe and hexbin.exe in the "src" directory
+	asem.exe, hexbin.exe and 83c552.mcu in the "src" directory
 	Run "build.bat"
 
 To build it manualy
