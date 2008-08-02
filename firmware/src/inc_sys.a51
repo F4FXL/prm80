@@ -75,7 +75,7 @@ sv_adc_lp:
 	; Modification du volume
 	mov	a, adch
 	cpl	a
-	cjne	a, vol_hold, sv_cont1	; Test la valeur memorisé et la valeur courante
+	cjne	a, vol_hold, sv_cont1	; Test la valeur memorise et la valeur courante
 	ret				; fin si egaux
 
 load_volume:
@@ -162,23 +162,11 @@ ls_lp0:
 	mov	a, P5
 	jnb	acc.2, ls_end
 	djnz	r4, ls_lp
-	jmp	ls_error
+	jmp	synth_error
 
 ls_end:
 	setb	mode.4
 	ret
-	
-ls_error:
-	clr	mode.4
-	mov	r0, #0eeh
-	call	lcd_clear_digits_r
-	call	lcd_print_hex
-	call	load_lcd
-lse_lp:
-	call	wdt_reset
-	call	TERMINAL
-	jmp	lse_lp
-
 
 ; Enoie d'une serie de bit, r2 contien le nombre et a les données	
 ls_send:
@@ -191,6 +179,19 @@ ls_send:
 	clr	ser_scl		; Generer un front descendant
 	rl	a		; Preparer bit suivant
 	djnz	r2,ls_send	; fin de la boucle
+	ret
+
+;----------------------------------------
+; Passage en mode erreur de synthetiseur
+;----------------------------------------
+synth_error:
+	clr	mode.4
+	mov	vol_hold, #0	; Mute
+	setb	P4.1
+	mov	r0, #0eeh
+	call	lcd_clear_digits_r
+	call	lcd_print_hex
+	call	load_lcd
 	ret
 
 ;----------------------------------------

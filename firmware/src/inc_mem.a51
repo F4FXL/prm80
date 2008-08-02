@@ -136,7 +136,6 @@ load_parameters:
 	jz	lp_load
 	call	load_ram_default	; Si eeprom invalide egalement alors reinit usine
 	call	bip
-	
 lp_load:
 	;Charger les donnees de la ram
 	mov	dph, #ram_area_config

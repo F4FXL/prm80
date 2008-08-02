@@ -282,16 +282,19 @@ m_loop:
 ;*** Test de la liaison serie	
 	call	TERMINAL		; Passer la main au terminal
 
+;*** Test des boutons
+	call	wdt_reset
+	call	buttons
+
+;*** Test si Mode erreur synthe (PLL non verouillee)
+	jnb	mode.4, m_loop		; Si erreur : boucler
+
 ;*** Test TX
 	mov	c, P4.0
 	orl	c, lock.1		; Test du verroullage TX
 	jb	CY, m_notx
 	call	tx
 m_notx:
-
-;*** Test des boutons
-	call	wdt_reset
-	call	buttons
 
 ;*** Affichage des symboles speciaux
 	call	wdt_reset
