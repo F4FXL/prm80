@@ -42,4 +42,16 @@ public class ChannelList{
     public int countChannel() {
         return this.list.size();
     }
+    
+    public void loadFromMemoryImage(MemoryImage memory) {
+        this.list.clear();
+        int maxChan = memory.getRamData(MemoryImage.RAM_ADRESS_MAX_CHAN);
+        for (int i= 0; i < maxChan; i++) {
+            
+        }
+    }
+    
+    public void saveToMemoryImage(MemoryImage memory) {
+        
+    }
 }

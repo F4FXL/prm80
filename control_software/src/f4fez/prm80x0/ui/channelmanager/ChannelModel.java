@@ -121,7 +121,7 @@ public class ChannelModel extends AbstractTableModel {
                 break;
         }
 
-        if ( (row == this.channels.countChannel()) && (!this.newChannel.getFrequency().equals("")) )  {
+        if ( (row == this.channels.countChannel()) && (this.newChannel.getFrequency() != null) )  {
             this.channels.addChannel(newChannel);
             this.newChannel = new Channel();
         }
