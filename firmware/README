@@ -17,7 +17,7 @@
 
 
 This firmware intended to be use with PRM8060 and PRM8070 radios.
-Visit our home page : http://prm80.sourceforge.net
+Visit our home page for more informations: http://prm80.sourceforge.net
 
 Updating the firmware :
 -----------------------
@@ -28,16 +28,16 @@ You can also build the firmware from source code (see below)
 To build from the source code :
 -------------------------------
 Source code is originaly compiled with ASEM 51 (http://plit.de/asem-51/)
-Check if asem51 is correctly installed and binaries are in the path.
+Check if asem51 is correctly installed and binaries are in the system path.
 
 Under Linux :
 	just type "make" to build the source
     
 Under Windows / Dos
-	Make sure asem51 binaries are in the path, if not, you can also copy 
+	Make sure asem51 binaries are in the system path, if not, you can also copy 
 	asem.exe, hexbin.exe and 83c552.mcu in the "src" directory
 	Run "build.bat"
 
-To build it manualy
+To build it manualy (Without make or build.bat)
 	Don't forget to add the TARGET constant in the command line.
         i.e : "asem -d TARGET:8060 prm.a51"
