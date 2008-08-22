@@ -155,37 +155,7 @@ public interface PRMControler {
      * @param power HF Power
      */
     public void setPower(int power) throws CommunicationException;
-    
-    /**
-     * Read data from the PRM EEPROM
-     * @param adress First byte adress to read
-     * @param length Number of byte to read
-     * @return byte array of data read
-     */    
-    public byte[] readEEPROM(int adress, int length) throws CommunicationException;
-    
-    /**
-     * Write bytes to the PRM EEPROM. Take care about the eeprom pagination
-     * @param data data bytes
-     * @param adress adress of the first byte to write
-     */
-    //public void writeEEPROM(byte[] data, int adress) throws CommunicationException;
-    
-    /**
-     * Read data from the PRM external RAM
-     * @param adress First byte adress to read
-     * @param length Number of byte to read
-     * @return byte array of data read
-     */   
-    public byte[] readRAM(int adress, int length) throws CommunicationException;
-    
-    /**
-     * Write bytes to the PRM external RAM
-     * @param data data bytes
-     * @param adress adress of the first byte to write
-     */
-    public void writeRAM(byte[] data, int adress) throws CommunicationException;
-    
+       
     /**
      * Force RAM and configuration reset
      */

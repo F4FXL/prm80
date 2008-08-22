@@ -51,9 +51,6 @@ public class DummyControler implements PRMControler{
     private int pllCounter;
     private int rxFreq;
     private int txFreq;
-    
-    private byte[] ram;
-    private byte[] eeprom;
 
     private ChannelList channels;
     
@@ -95,29 +92,29 @@ public class DummyControler implements PRMControler{
 
     @Override
     public int readSquelch() {
-        return this.ram[DummyControler.ramSquelchAdress];
+        return this.image.getRamData(MemoryImage.RAM_ADRESS_SQUELCH);
     }
 
     @Override
     public void writeSquelch(int level) {
         assert level > 15;
-        this.ram[DummyControler.ramSquelchAdress] = (byte) level;
+        this.image.setRamData(MemoryImage.RAM_ADRESS_SQUELCH, (byte) level);
     }
 
     @Override
     public int getCurrentChannel() {
-        return this.ram[DummyControler.ramChanAdress];
+        return this.image.getRamData(MemoryImage.RAM_ADRESS_CHAN);
     }
 
     @Override
     public void setCurrentChannel(int channel) {
-        assert channel > this.eeprom[DummyControler.ramMaxChanAdress];
-        this.ram[DummyControler.ramChanAdress] = (byte) channel;
+        assert channel > this.image.getEepromData(MemoryImage.RAM_ADRESS_MAX_CHAN);
+        this.image.setRamData(MemoryImage.RAM_ADRESS_CHAN, (byte) channel);
         
-        int eepromPos = channel*2 + DummyControler.ramAreaFreqAdress;
+        int eepromPos = channel*2 + MemoryImage.RAM_AREA_ADRESS_FREQ;
         
-        byte wordHi = this.eeprom[eepromPos+1];
-        byte wordLo = this.eeprom[eepromPos];
+        byte wordHi = this.image.getEepromData(eepromPos+1);
+        byte wordLo = this.image.getEepromData(eepromPos);
         int pllWord = ((wordHi & 0xFF) << 8) + (wordLo & 0xFF);
         
         this.setRxPLLFrequecny(pllWord * (DummyControler.localOscillatorFrequency / this.pllRefCounter));
@@ -135,49 +132,16 @@ public class DummyControler implements PRMControler{
     }
 
     @Override
-    public byte[] readEEPROM(int adress, int length) {
-        byte[] buf = new byte[length];
-        for (int i=0; i < length; i++)
-            buf[i] = this.eeprom[i+adress];
-        return buf;
-    }
-
-    /*@Override
-    public void writeEEPROM(byte[] data, int adress) {
-        for (int i=0; i < data.length; i++)
-            this.eeprom[i+adress] = data[i];
-    }*/
-
-    @Override
-    public byte[] readRAM(int adress, int length) {
-        byte[] buf = new byte[length];
-        for (int i=0; i < length; i++)
-            buf[i] = this.ram[i+adress];
-        return buf;
-    }
-
-    @Override
-    public void writeRAM(byte[] data, int adress) {
-        for (int i=0; i < data.length; i++)
-            this.ram[i+adress] = data[i];
-    }
-
-    @Override
     public void reloadRAM() {
         this.volume = 4;
         this.connected = false;
-        this.setPLLStep(12500);
-        
-        for (int i = 0; i < 2048; i++)
-            this.ram[i] = this.eeprom[i];
+        this.setPLLStep(12500);        
+        this.image.copyEeprom2Ram();
        
     }
 
     @Override
     public void resetPRM() {
-        ram = new byte[32768];
-        eeprom = new byte[2048];
-
         this.channels = new ChannelList();
         ArrayList<Integer> freq = new ArrayList<Integer>();
         freq.add(144100000);
@@ -187,7 +151,7 @@ public class DummyControler implements PRMControler{
         
         this.reloadRAM();
         
-        this.setCurrentChannel(this.ram[DummyControler.ramChanAdress]);
+        this.setCurrentChannel(this.image.getRamData(MemoryImage.RAM_ADRESS_CHAN));
     }
 
     @Override
@@ -197,7 +161,7 @@ public class DummyControler implements PRMControler{
 
     @Override
     public int getMaxChan() {
-        return this.eeprom[DummyControler.ramMaxChanAdress];
+        return this.image.getRamData(MemoryImage.RAM_ADRESS_MAX_CHAN);
     }
 
     @Override
@@ -231,16 +195,16 @@ public class DummyControler implements PRMControler{
     
     private void loadVirtualEEprom(ArrayList<Integer> array) {
         for(int i= 0; i < array.size(); i++) {
-            int eepromPos = i*2 + DummyControler.ramAreaFreqAdress;
+            int eepromPos = i*2 + MemoryImage.RAM_AREA_ADRESS_FREQ;
             int pllWord = array.get(i) / 12500;
             byte wordHi = (byte) (pllWord / 256);
             byte wordLo = (byte) (pllWord - (wordHi * 256) );
             int x = wordLo;
-            this.eeprom[eepromPos] = wordLo;
-            this.eeprom[eepromPos+1] = wordHi;
+            this.image.setEepromData(eepromPos, wordLo);
+            this.image.setEepromData(eepromPos+1, wordHi);
         }
-        this.eeprom[DummyControler.ramMaxChanAdress] = (byte) array.size();        
-        this.eeprom[DummyControler.ramSquelchAdress] = 9;
+        this.image.setEepromData(MemoryImage.RAM_ADRESS_MAX_CHAN, (byte) array.size());        
+        this.image.setEepromData(MemoryImage.RAM_ADRESS_SQUELCH, (byte) 5);
     }
 
     @Override

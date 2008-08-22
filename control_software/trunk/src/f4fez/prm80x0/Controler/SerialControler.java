@@ -193,21 +193,6 @@ public class SerialControler implements PRMControler{
     }
 
     @Override
-    public byte[] readEEPROM(int adress, int length) {
-        return null;
-    }
-
-    @Override
-    public byte[] readRAM(int adress, int length) {
-        return null;
-    }
-
-    @Override
-    public void writeRAM(byte[] data, int adress) {
-        
-    }
-
-    @Override
     public void reloadRAM() {
         
     }
