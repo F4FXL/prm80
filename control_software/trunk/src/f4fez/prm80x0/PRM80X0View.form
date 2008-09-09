@@ -395,6 +395,18 @@
                     <Property name="name" type="java.lang.String" value="eepromMenuItem" noResource="true"/>
                   </Properties>
                 </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="ram2eepromMenuItem">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" resourceKey="ram2eepromMenuItem.text"/>
+                    <Property name="name" type="java.lang.String" value="ram2eepromMenuItem" noResource="true"/>
+                  </Properties>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="eeprom2ramMenuItem">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" resourceKey="eeprom2ramMenuItem.text"/>
+                    <Property name="name" type="java.lang.String" value="eeprom2ramMenuItem" noResource="true"/>
+                  </Properties>
+                </MenuItem>
               </SubComponents>
             </Menu>
             <MenuItem class="javax.swing.JMenuItem" name="serialSpyMenuItem">

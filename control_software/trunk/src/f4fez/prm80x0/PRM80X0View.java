@@ -228,6 +228,8 @@ public class PRM80X0View extends FrameView {
         ramIntMenuItem = new javax.swing.JMenuItem();
         ramExtMenuItem = new javax.swing.JMenuItem();
         eepromMenuItem = new javax.swing.JMenuItem();
+        ram2eepromMenuItem = new javax.swing.JMenuItem();
+        eeprom2ramMenuItem = new javax.swing.JMenuItem();
         serialSpyMenuItem = new javax.swing.JMenuItem();
         expertSeparator = new javax.swing.JSeparator();
         expertMenuItem = new javax.swing.JCheckBoxMenuItem();
@@ -466,6 +468,14 @@ public class PRM80X0View extends FrameView {
         eepromMenuItem.setText(resourceMap.getString("eepromMenuItem.text")); // NOI18N
         eepromMenuItem.setName("eepromMenuItem"); // NOI18N
         memoryMenu.add(eepromMenuItem);
+
+        ram2eepromMenuItem.setText(resourceMap.getString("ram2eepromMenuItem.text")); // NOI18N
+        ram2eepromMenuItem.setName("ram2eepromMenuItem"); // NOI18N
+        memoryMenu.add(ram2eepromMenuItem);
+
+        eeprom2ramMenuItem.setText(resourceMap.getString("eeprom2ramMenuItem.text")); // NOI18N
+        eeprom2ramMenuItem.setName("eeprom2ramMenuItem"); // NOI18N
+        memoryMenu.add(eeprom2ramMenuItem);
 
         ToolsMenu.add(memoryMenu);
 
@@ -742,6 +752,7 @@ public class PRM80X0View extends FrameView {
     private javax.swing.JMenuItem connectVirtualMenuItem;
     private javax.swing.JMenuItem disconnectMenuItem;
     private javax.swing.JButton downButton;
+    private javax.swing.JMenuItem eeprom2ramMenuItem;
     private javax.swing.JMenuItem eepromMenuItem;
     private javax.swing.JCheckBoxMenuItem expertMenuItem;
     private javax.swing.JSeparator expertSeparator;
@@ -758,6 +769,7 @@ public class PRM80X0View extends FrameView {
     private javax.swing.ButtonGroup modeButtonGroup;
     private javax.swing.JButton powerButton;
     private javax.swing.JProgressBar progressBar;
+    private javax.swing.JMenuItem ram2eepromMenuItem;
     private javax.swing.JMenuItem ramExtMenuItem;
     private javax.swing.JMenuItem ramIntMenuItem;
     private javax.swing.JMenuItem razMenuItem;

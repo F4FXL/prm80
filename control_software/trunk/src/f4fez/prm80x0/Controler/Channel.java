@@ -28,6 +28,12 @@ public class Channel {
     public Channel() {
         this.id = -1;
     }
+    
+    public Channel(String frequency, boolean shift) {
+        this.id = -1;
+        this.frequency = frequency;
+        this.shift = shift;
+    }            
 
     /**
      * Get the value of id

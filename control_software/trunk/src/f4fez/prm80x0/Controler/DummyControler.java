@@ -28,15 +28,6 @@ import java.util.ArrayList;
  * @author Florian
  */
 public class DummyControler implements PRMControler{
-
-    private static int ramAreaFreqAdress = 0x100;
-    private static int ramAreaStateAdress = 0x200;
-    
-    private static int ramChanAdress = 0x010;
-    private static int ramSquelchAdress = 0x011;
-    private static int ramModeAdress = 0x012;
-    private static int ramMaxChanAdress = 0x013;
-    
     private static int localOscillatorFrequency = 6000000;
     protected static int IF = 21400000;
     
@@ -48,12 +39,9 @@ public class DummyControler implements PRMControler{
     private int power;
     
     private int pllRefCounter;
-    private int pllCounter;
     private int rxFreq;
     private int txFreq;
 
-    private ChannelList channels;
-    
     private MemoryImage image;
     
     @Override
@@ -142,7 +130,6 @@ public class DummyControler implements PRMControler{
 
     @Override
     public void resetPRM() {
-        this.channels = new ChannelList();
         ArrayList<Integer> freq = new ArrayList<Integer>();
         freq.add(144100000);
         freq.add(145600000);
@@ -209,12 +196,12 @@ public class DummyControler implements PRMControler{
 
     @Override
     public void RAM2EEPROM() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.image.copyRam2Eeprom();
     }
 
     @Override
     public void EEPROM2RAM() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.image.copyEeprom2Ram();
     }
 
     @Override
@@ -227,7 +214,18 @@ public class DummyControler implements PRMControler{
     }
 
     public ChannelList getChannels() {
-        return this.channels;
+        ChannelList list = new ChannelList();
+        int maxChan = this.image.getRamData(MemoryImage.RAM_ADRESS_MAX_CHAN);
+        for (int i= 0; i < maxChan; i++) {
+            int ramPos = i*2 + MemoryImage.RAM_AREA_ADRESS_FREQ;
+            byte wordHi = this.image.getEepromData(ramPos+1);
+            byte wordLo = this.image.getEepromData(ramPos);
+            int pllWord = ((wordHi & 0xFF) << 8) + (wordLo & 0xFF);
+            String freq = Integer.toString(pllWord * this.getPLLStep());
+            freq = freq.substring(0, freq.length()-6) + "." + freq.substring(freq.length()-6);
+            list.addChannel(new Channel(freq, false));
+        }
+        return list;
     }
 
 
