@@ -17,8 +17,9 @@
  * Created on 4 mars 2008, 12:36
  */
 
-package f4fez.prm80x0;
+package f4fez.prm80x0.gui;
 
+import f4fez.prm80x0.*;
 import gnu.io.CommPortIdentifier;
 import java.util.Enumeration;
 

@@ -16,7 +16,7 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package f4fez.prm80x0;
+package f4fez.prm80x0.gui;
 
 import org.jdesktop.application.Action;
 

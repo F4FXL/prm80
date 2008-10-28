@@ -17,11 +17,14 @@
  * Created on 19 février 2008, 12:59
  */
 
-package f4fez.prm80x0.ui.channelmanager;
+package f4fez.prm80x0.gui.channelmanager;
 
 import f4fez.prm80x0.Controler.Channel;
 import f4fez.prm80x0.Controler.ChannelList;
-import f4fez.prm80x0.ui.channelmanager.ChannelModel;
+import f4fez.prm80x0.gui.channelmanager.ChannelModel;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.TableModel;
 import org.jdesktop.application.Action;
 
 /**
@@ -84,6 +87,11 @@ public class ChannelManager extends javax.swing.JDialog {
 
         table.setModel(new ChannelModel(this.channels));
         table.setName("table"); // NOI18N
+        table.getModel().addTableModelListener(new TableModelListener() {
+            public void tableChanged(TableModelEvent e) {
+                tableTableChanged(e);
+            }            
+        });
         tableScroll.setViewportView(table);
 
         getContentPane().add(tableScroll, java.awt.BorderLayout.CENTER);
@@ -92,19 +100,39 @@ public class ChannelManager extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
+        this.channels = null;
         this.setVisible(false);
     }//GEN-LAST:event_cancelButtonActionPerformed
 
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
-        // TODO add your handling code here:
+        this.setVisible(false);
     }//GEN-LAST:event_saveButtonActionPerformed
     
+    public void tableTableChanged(TableModelEvent e) {
+        int row = e.getFirstRow();
+        int column = e.getColumn();
+        TableModel model = (TableModel)e.getSource();
+        String columnName = model.getColumnName(column);
+        String data = model.getValueAt(row, column).toString();
+        if (column == ChannelModel.COL_FREQUENCY) {
+            int decimalCount = data.length() - data.indexOf('.');
+            int a = 0;
+        }
+    }
+
     @Action
     public void addChannel() {
         Channel channel = new Channel();
         this.channels.addChannel(channel);
     }
     
+    public boolean isChannelListValid() {
+        return this.channels != null;
+    }
+    
+    public ChannelList getChannelList() {
+        return this.channels;
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel buttonsBar;
     private javax.swing.JButton cancelButton;

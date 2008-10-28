@@ -17,7 +17,7 @@
  * Created on 19 février 2008, 12:59
  */
 
-package f4fez.prm80x0.ui.channelmanager;
+package f4fez.prm80x0.gui.channelmanager;
 
 import f4fez.prm80x0.Controler.Channel;
 import f4fez.prm80x0.Controler.ChannelList;
@@ -28,7 +28,10 @@ import javax.swing.table.AbstractTableModel;
  * @author fmazen
  */
 public class ChannelModel extends AbstractTableModel {
-
+    public static int COL_CHANNEL = 0;
+    public static int COL_FREQUENCY = 1;
+    public static int COL_SHIFT = 2;
+    public static int COL_COMMENTS = 3;
     private ChannelList channels;
     private Channel newChannel;
 

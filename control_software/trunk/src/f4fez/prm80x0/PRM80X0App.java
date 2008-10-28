@@ -18,6 +18,7 @@
 
 package f4fez.prm80x0;
 
+import f4fez.prm80x0.gui.PRM80X0View;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 

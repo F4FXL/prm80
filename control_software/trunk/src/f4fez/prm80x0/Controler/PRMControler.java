@@ -195,8 +195,14 @@ public interface PRMControler {
     public MemoryImage getMemoryImage();
 
     /**
-     * Obtain the list of channels
+     * Obtain a copy of the list of channels
      * @return list of channels
      */
     public ChannelList getChannels();
+    
+    /**
+     * Set the list of channels
+     * @return list of channels
+     */
+    public void setChannels(ChannelList list);
 }

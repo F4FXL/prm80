@@ -16,9 +16,10 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package f4fez.prm80x0;
+package f4fez.prm80x0.gui;
 
-import f4fez.prm80x0.ui.channelmanager.ChannelManager;
+import f4fez.prm80x0.*;
+import f4fez.prm80x0.gui.channelmanager.ChannelManager;
 import java.awt.Dimension;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,7 +41,7 @@ import f4fez.prm80x0.Controler.CommunicationException;
 import f4fez.prm80x0.Controler.DummyControler;
 import f4fez.prm80x0.Controler.PRMControler;
 import f4fez.prm80x0.Controler.SerialControler;
-import f4fez.prm80x0.serialterminal.TerminalDialog;
+import f4fez.prm80x0.gui.serialterminal.TerminalDialog;
 
 
 /**
@@ -132,11 +133,11 @@ public class PRM80X0View extends FrameView {
 
             try {
                 // Load lcd font
-                InputStream lcdFontStream = this.getClass().getClassLoader().getResourceAsStream("f4fez/prm80x0/resources/lcd.ttf");
+                InputStream lcdFontStream = this.getClass().getClassLoader().getResourceAsStream("f4fez/prm80x0/gui/resources/lcd.ttf");
                 Font lcdFont = Font.createFont(Font.TRUETYPE_FONT, lcdFontStream).deriveFont(32f);
                 this.freqLabel.setFont(lcdFont);
                 this.chanLabel.setFont(lcdFont);
-                lcdFontStream = this.getClass().getClassLoader().getResourceAsStream("f4fez/prm80x0/resources/lcd.ttf");
+                lcdFontStream = this.getClass().getClassLoader().getResourceAsStream("f4fez/prm80x0/gui/resources/lcd.ttf");
                 lcdFont = Font.createFont(Font.TRUETYPE_FONT, lcdFontStream).deriveFont(20f);
                 this.txFreqLabel.setFont(lcdFont);
             } catch (Exception ex) {
@@ -661,6 +662,9 @@ public class PRM80X0View extends FrameView {
             ChannelManager cm = new ChannelManager(mainFrame, true, this.vdf.getPRMControler().getChannels());
             cm.setLocationRelativeTo(mainFrame);
             cm.setVisible(true);
+            if (cm.isChannelListValid()) {
+                this.vdf.getPRMControler().setChannels(cm.getChannelList());
+            }
     }//GEN-LAST:event_channelManagerMenuItemActionPerformed
 
     private void configurationMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configurationMenuItemActionPerformed

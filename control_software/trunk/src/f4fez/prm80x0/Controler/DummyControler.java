@@ -186,7 +186,6 @@ public class DummyControler implements PRMControler{
             int pllWord = array.get(i) / 12500;
             byte wordHi = (byte) (pllWord / 256);
             byte wordLo = (byte) (pllWord - (wordHi * 256) );
-            int x = wordLo;
             this.image.setEepromData(eepromPos, wordLo);
             this.image.setEepromData(eepromPos+1, wordHi);
         }
@@ -218,14 +217,27 @@ public class DummyControler implements PRMControler{
         int maxChan = this.image.getRamData(MemoryImage.RAM_ADRESS_MAX_CHAN);
         for (int i= 0; i < maxChan; i++) {
             int ramPos = i*2 + MemoryImage.RAM_AREA_ADRESS_FREQ;
-            byte wordHi = this.image.getEepromData(ramPos+1);
-            byte wordLo = this.image.getEepromData(ramPos);
+            byte wordHi = this.image.getRamData(ramPos+1);
+            byte wordLo = this.image.getRamData(ramPos);
             int pllWord = ((wordHi & 0xFF) << 8) + (wordLo & 0xFF);
             String freq = Integer.toString(pllWord * this.getPLLStep());
             freq = freq.substring(0, freq.length()-6) + "." + freq.substring(freq.length()-6);
             list.addChannel(new Channel(freq, false));
         }
         return list;
+    }
+
+    public void setChannels(ChannelList list) {
+        for (int i= 0; i < list.countChannel(); i++) {
+            int ramPos = i*2 + MemoryImage.RAM_AREA_ADRESS_FREQ;
+            String freq = list.getChannel(i).getFrequency().replace(".", "");
+            int pllWord = Integer.parseInt(freq)  / 12500;
+            byte wordHi = (byte) (pllWord / 256);
+            byte wordLo = (byte) (pllWord - (wordHi * 256) );
+            this.image.setRamData(ramPos, wordLo);
+            this.image.setRamData(ramPos+1, wordHi);            
+        }
+        this.image.setRamData(MemoryImage.RAM_ADRESS_MAX_CHAN, (byte)list.countChannel());
     }
 
 

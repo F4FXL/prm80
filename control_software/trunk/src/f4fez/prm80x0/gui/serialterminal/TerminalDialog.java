@@ -19,7 +19,7 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package f4fez.prm80x0.serialterminal;
+package f4fez.prm80x0.gui.serialterminal;
 
 import f4fez.prm80x0.Controler.SerialListener;
 
