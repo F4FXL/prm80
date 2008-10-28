@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,48 +18,37 @@ import java.util.logging.Logger;
  *
  * @author f4fez
  */
-public class Slot implements Runnable {
+public class ErrorSlot implements Runnable {
     private Socket socket;
     private OutputStream outStream;
     private InputStream inStream;
     private PrintWriter out;
     
-    public static String CODE_ = "";
-    
     public void connect(Socket socket) {
         try {            
             if (this.socket == null) {
                 this.socket = socket;
-                //socket.setSoTimeout(5000);
+                socket.setSoTimeout(5000);
                 this.outStream = this.socket.getOutputStream();
                 this.out = new PrintWriter(outStream);
                 this.inStream = this.socket.getInputStream();
                 new Thread(this).start();
             }
         } catch (IOException ex) {
-            Logger.getLogger(Slot.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ErrorSlot.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    public boolean isFree() {
-        return this.socket == null;
-    }
-
     public void run() {
-        System.out.println("Connection");
-        out.print("PRM80 server V1.0>OK\n\r");
-        while(this.socket != null) {
+        System.out.println("Erreur : Serveur Plein");
             try {
+                out.print("PRM80 server V1.0>FU\n\r");
+                out.flush();
                 int i = this.inStream.read();
-                if (i == -1)
-                    this.socket = null;
-                else
-                    this.outStream.write(i);
+                out.close();
+            } catch (SocketTimeoutException ex) {
+                out.close();
             } catch (IOException ex) {
-                Logger.getLogger(Slot.class.getName()).log(Level.SEVERE, null, ex);
-                this.socket = null;
+                Logger.getLogger(ErrorSlot.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
-        System.out.println("Déconnexion");
     }
 }

@@ -36,29 +36,13 @@ public class Server implements Runnable {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        if (args.length != 1)
+        if (args.length != 1) {
             System.out.println("Syntax is : server <port>");
+            System.exit(1);
+        }
         new Server (Integer.parseInt(args[0]));        
     }
 
-    private void denied(Socket socket) {
-        OutputStream outStream = null;
-        try {
-            outStream = socket.getOutputStream();
-            PrintWriter out = new PrintWriter(outStream);
-            out.print("PRM80 server V1.0>FU\n");
-            out.flush();
-            
-        } catch (IOException ex) {
-            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                outStream.close();
-            } catch (IOException ex) {
-                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
     
     public void run() {
         this.running = true;
@@ -68,7 +52,7 @@ public class Server implements Runnable {
                 if (this.serverSlot.isFree())
                     this.serverSlot.connect(socket);
                 else
-                    this.denied(socket);
+                    new ErrorSlot().connect(socket);
             } catch (IOException ex) {
                 Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
             }
