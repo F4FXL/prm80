@@ -29,9 +29,8 @@ public class Slot implements Runnable {
         try {            
             if (this.socket == null) {
                 this.socket = socket;
-                //socket.setSoTimeout(5000);
                 this.outStream = this.socket.getOutputStream();
-                this.out = new PrintWriter(outStream);
+                this.out = new PrintWriter(outStream, true);
                 this.inStream = this.socket.getInputStream();
                 new Thread(this).start();
             }
@@ -45,20 +44,25 @@ public class Slot implements Runnable {
     }
 
     public void run() {
-        System.out.println("Connection");
-        out.print("PRM80 server V1.0>OK\n\r");
-        while(this.socket != null) {
-            try {
-                int i = this.inStream.read();
-                if (i == -1)
+        try {
+            System.out.println("Connection");
+            outStream.write("PRM80 server V1.0>OK\r\n".getBytes());
+            while (this.socket != null) {
+                try {
+                    int i = this.inStream.read();
+                    if (i == -1) {
+                        this.socket = null;
+                    } else {
+                        this.outStream.write(i);
+                    }
+                } catch (IOException ex) {
+                    Logger.getLogger(Slot.class.getName()).log(Level.SEVERE, null, ex);
                     this.socket = null;
-                else
-                    this.outStream.write(i);
-            } catch (IOException ex) {
-                Logger.getLogger(Slot.class.getName()).log(Level.SEVERE, null, ex);
-                this.socket = null;
+                }
             }
+            System.out.println("Déconnexion");
+        } catch (IOException ex) {
+            Logger.getLogger(Slot.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println("Déconnexion");
     }
 }
