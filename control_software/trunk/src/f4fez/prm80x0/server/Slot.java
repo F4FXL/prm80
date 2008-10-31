@@ -23,7 +23,8 @@ public class Slot implements Runnable {
     private InputStream inStream;
     private PrintWriter out;
     
-    public static String CODE_ = "";
+    public static final int CODE_QUIT = 129;
+    public static final int CODE_PING = 128;
     
     public void connect(Socket socket) {
         try {            
@@ -53,7 +54,10 @@ public class Slot implements Runnable {
                     if (i == -1) {
                         this.socket = null;
                     } else {
-                        this.outStream.write(i);
+                        if (i > 127)
+                            this.command(i);
+                        else
+                            this.outStream.write(i);
                     }
                 } catch (IOException ex) {
                     Logger.getLogger(Slot.class.getName()).log(Level.SEVERE, null, ex);
@@ -64,5 +68,22 @@ public class Slot implements Runnable {
         } catch (IOException ex) {
             Logger.getLogger(Slot.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    private void command(int code) {
+        try {
+            switch (code) {
+                case CODE_PING:
+                    this.outStream.write(CODE_PING);
+                    break;
+                case CODE_QUIT:
+                    this.outStream.write(CODE_QUIT);
+                    this.inStream.close();
+                    this.outStream.close();
+                    this.socket.close();
+                    this.socket = null;
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(Slot.class.getName()).log(Level.SEVERE, null, ex);
+        } 
     }
 }
