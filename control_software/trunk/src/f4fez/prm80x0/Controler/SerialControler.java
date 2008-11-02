@@ -330,14 +330,17 @@ public class SerialControler implements PRMControler{
         this.serialListeners.clear();
     }
 
+    @Override
     public MemoryImage getMemoryImage() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public ChannelList getChannels() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public void setChannels(ChannelList list) {
         throw new UnsupportedOperationException("Not supported yet.");
     }

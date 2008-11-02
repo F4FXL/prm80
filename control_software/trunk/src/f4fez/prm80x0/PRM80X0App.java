@@ -54,6 +54,12 @@ public class PRM80X0App extends SingleFrameApplication {
      * Main method launching the application.
      */
     public static void main(String[] args) {
-        launch(PRM80X0App.class, args);
+        if (args.length > 0) {
+            if (args[0].equals("server")) {
+                    f4fez.prm80x0.server.Server.runServer(args);
+            }
+        }            
+        else
+            launch(PRM80X0App.class, args);
     }
 }

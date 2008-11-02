@@ -25,27 +25,27 @@ public class Server implements Runnable {
         try {
             this.port = port;
             socketServer = new ServerSocket(port);
-            this.serverSlot = new Slot();
+            this.serverSlot = new Slot("/dev/ttyS0");
             new Thread(this).start();
         } catch (IOException ex) {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        if (args.length != 1) {
-            System.out.println("Syntax is : server <port>");
+
+    public static void runServer(String[] args) {
+        if (args.length != 2) {
+            System.out.println("Paramerters for server are : server <port>");
             System.exit(1);
         }
-        new Server (Integer.parseInt(args[0]));        
+        new Server (Integer.parseInt(args[1]));        
     }
 
     
+    @Override
     public void run() {
         this.running = true;
+        System.out.println("Server started");
         while(this.running) {
             try {
                 Socket socket = this.socketServer.accept();
