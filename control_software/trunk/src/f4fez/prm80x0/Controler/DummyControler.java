@@ -27,7 +27,7 @@ import java.util.ArrayList;
  *
  * @author Florian
  */
-public class DummyControler implements PRMControler{
+public class DummyControler implements Controler{
     private static int localOscillatorFrequency = 6000000;
     protected static int IF = 21400000;
     

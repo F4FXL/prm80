@@ -40,7 +40,6 @@ public class Slot implements Runnable {
             if (this.socket == null) {
                 this.socket = socket;
                 this.outStream = this.socket.getOutputStream();
-                this.out = new PrintWriter(outStream, true);
                 this.inStream = this.socket.getInputStream();
                 new Thread(this).start();
             }
@@ -67,6 +66,7 @@ public class Slot implements Runnable {
                         while (socket != null) {
                             int j = serialIn.read();
                             outStream.write(j);
+                            System.out.print(Character.toChars(j));
                         }
                     } catch (IOException ex) {
                         System.out.println("Erreur reading char");
@@ -74,12 +74,12 @@ public class Slot implements Runnable {
                     }
                 }
             });
-            
+            serialRX.start();
             
             // End wait for serial RX
             
             System.out.println("Connection");
-            outStream.write("PRM80 server V1.0>OK\r\n".getBytes());
+            outStream.write("PRM80 server Ok V1.0>".getBytes());
             while (this.socket != null) {
                 try {
                     int i = this.inStream.read();
@@ -91,8 +91,10 @@ public class Slot implements Runnable {
                     } else {
                         if (i > 127)
                             this.command(i);
-                        else
+                        else {
                             this.serialOut.write(i);
+                            System.out.print(Character.toChars(i));
+                        }
                     }
                 } catch (IOException ex) {
                     Logger.getLogger(Slot.class.getName()).log(Level.SEVERE, null, ex);

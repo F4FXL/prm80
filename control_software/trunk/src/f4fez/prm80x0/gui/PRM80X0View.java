@@ -39,8 +39,9 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import f4fez.prm80x0.Controler.CommunicationException;
 import f4fez.prm80x0.Controler.DummyControler;
-import f4fez.prm80x0.Controler.PRMControler;
+import f4fez.prm80x0.Controler.Controler;
 import f4fez.prm80x0.Controler.SerialControler;
+import f4fez.prm80x0.Controler.TcpControler;
 import f4fez.prm80x0.gui.serialterminal.TerminalDialog;
 
 
@@ -186,6 +187,7 @@ public class PRM80X0View extends FrameView {
         this.memoryMenu.setVisible(enable);
         this.serialSpyMenuItem.setVisible(enable);
         this.expertSeparator.setVisible(enable);
+        this.connectTcpMenuItem.setVisible(enable);
     }
 
     /** This method is called from within the constructor to
@@ -217,6 +219,7 @@ public class PRM80X0View extends FrameView {
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
         connectMenuItem = new javax.swing.JMenuItem();
         connectVirtualMenuItem = new javax.swing.JMenuItem();
+        connectTcpMenuItem = new javax.swing.JMenuItem();
         disconnectMenuItem = new javax.swing.JMenuItem();
         javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
         ToolsMenu = new javax.swing.JMenu();
@@ -401,6 +404,15 @@ public class PRM80X0View extends FrameView {
         });
         fileMenu.add(connectVirtualMenuItem);
 
+        connectTcpMenuItem.setText(resourceMap.getString("connectTcpMenuItem.text")); // NOI18N
+        connectTcpMenuItem.setName("connectTcpMenuItem"); // NOI18N
+        connectTcpMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                connectTcpMenuItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(connectTcpMenuItem);
+
         disconnectMenuItem.setText(resourceMap.getString("disconnectMenuItem.text")); // NOI18N
         disconnectMenuItem.setEnabled(false);
         disconnectMenuItem.setName("disconnectMenuItem"); // NOI18N
@@ -530,7 +542,7 @@ public class PRM80X0View extends FrameView {
             .add(statusPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(statusMessageLabel)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 334, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 322, Short.MAX_VALUE)
                 .add(progressBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(statusAnimationLabel)
@@ -555,7 +567,7 @@ public class PRM80X0View extends FrameView {
 
     private void connectMenuActionPerformed(java.awt.event.ActionEvent evt) {                                            
         try {
-            SerialControler prmControler = new SerialControler(); //new DummyControler();
+            SerialControler prmControler = new SerialControler();
             prmControler.connectPRM(this.config.getSerialPort());
                         
             // Si terminal ouvert alors ajouter listener
@@ -568,7 +580,8 @@ public class PRM80X0View extends FrameView {
             this.connectMenuItem.setEnabled(false);
             this.connectVirtualMenuItem.setEnabled(false);
             this.memToggleButton.setSelected(true);
-
+            this.connectTcpMenuItem.setEnabled(false);
+            
             this.updateValues();
             
             this.setEnableControls(true);
@@ -683,12 +696,13 @@ public class PRM80X0View extends FrameView {
 
     private void connectVirtualMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectVirtualMenuItemActionPerformed
         try {
-        PRMControler prmControler = new DummyControler();
+        Controler prmControler = new DummyControler();
         prmControler.connectPRM("");
         this.vdf = new VirtualDeviceFirmware(prmControler);
         this.disconnectMenuItem.setEnabled(true);
         this.connectMenuItem.setEnabled(false);
         this.connectVirtualMenuItem.setEnabled(false);
+        this.connectTcpMenuItem.setEnabled(false);
 
         this.updateValues();
         
@@ -723,11 +737,45 @@ public class PRM80X0View extends FrameView {
             JOptionPane.showMessageDialog(this.getComponent(), "Erreur de connexion : "+ex.getMessage(), "Erreur de connexion", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_powerButtonActionPerformed
+
+private void connectTcpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectTcpMenuItemActionPerformed
+    JFrame mainFrame = PRM80X0App.getApplication().getMainFrame();
+    ConnectDialog cd = new ConnectDialog(mainFrame, true);
+    cd.setVisible(true);
+    if (cd.getServerAdress() != null) {        
+        try {
+            TcpControler prmControler = new TcpControler();
+            prmControler.connectPRM(cd.getServerAdress());
+                        
+            // Si terminal ouvert alors ajouter listener
+            if (this.serialSpy != null )
+                prmControler.addSerialListener(this.serialSpy);
+            
+            this.vdf = new VirtualDeviceFirmware(prmControler);
+            
+            this.disconnectMenuItem.setEnabled(true);
+            this.connectMenuItem.setEnabled(false);
+            this.connectVirtualMenuItem.setEnabled(false);
+            this.memToggleButton.setSelected(true);
+            this.connectTcpMenuItem.setEnabled(false);
+            
+            this.updateValues();
+            
+            this.setEnableControls(true);
+        } catch (CommunicationException ex) {
+            this.disconnectMenuItem.setEnabled(false);
+            this.connectMenuItem.setEnabled(true);
+            JOptionPane.showMessageDialog(this.getComponent(), "Erreur de connexion : "+ex.getMessage(), "Erreur de connexion", JOptionPane.ERROR_MESSAGE);
+            Logger.getLogger(PRM80X0View.class.getName()).log(Level.WARNING, null, ex);
+        }
+    }
+}//GEN-LAST:event_connectTcpMenuItemActionPerformed
     private void disconnect() {
         try {
             this.disconnectMenuItem.setEnabled(false);
             this.connectMenuItem.setEnabled(true);
             this.connectVirtualMenuItem.setEnabled(true);
+            this.connectTcpMenuItem.setEnabled(true);
             this.setEnableControls(false);
             this.vdf.disconnect();
         } catch (CommunicationException ex) {
@@ -753,6 +801,7 @@ public class PRM80X0View extends FrameView {
     private javax.swing.JMenuItem channelManagerMenuItem;
     private javax.swing.JMenuItem configurationMenuItem;
     private javax.swing.JMenuItem connectMenuItem;
+    private javax.swing.JMenuItem connectTcpMenuItem;
     private javax.swing.JMenuItem connectVirtualMenuItem;
     private javax.swing.JMenuItem disconnectMenuItem;
     private javax.swing.JButton downButton;

@@ -22,7 +22,7 @@
 package f4fez.prm80x0;
 
 import f4fez.prm80x0.Controler.CommunicationException;
-import f4fez.prm80x0.Controler.PRMControler;
+import f4fez.prm80x0.Controler.Controler;
 
 /**
  *
@@ -30,12 +30,12 @@ import f4fez.prm80x0.Controler.PRMControler;
  */
 public class VirtualDeviceFirmware {
     
-    private PRMControler controler;
+    private Controler controler;
     private int maxChannelValue;
     private boolean vfoMode;
     private int memChan;
     
-    public VirtualDeviceFirmware(PRMControler controler) throws CommunicationException {
+    public VirtualDeviceFirmware(Controler controler) throws CommunicationException {
         this.controler = controler;
         this.maxChannelValue = controler.getMaxChan();
     }
@@ -109,7 +109,7 @@ public class VirtualDeviceFirmware {
         this.controler.writeSquelch(level);
     }
     
-    public PRMControler getPRMControler() {
+    public Controler getPRMControler() {
         return this.controler;
     }
     
