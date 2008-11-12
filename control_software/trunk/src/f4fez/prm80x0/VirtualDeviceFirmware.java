@@ -31,13 +31,11 @@ import f4fez.prm80x0.Controler.Controler;
 public class VirtualDeviceFirmware {
     
     private Controler controler;
-    private int maxChannelValue;
     private boolean vfoMode;
     private int memChan;
     
     public VirtualDeviceFirmware(Controler controler) throws CommunicationException {
         this.controler = controler;
-        this.maxChannelValue = controler.getMaxChan();
     }
             
     public void increment() throws CommunicationException {
@@ -47,7 +45,7 @@ public class VirtualDeviceFirmware {
         }
         else {
             memChan++;
-            if (memChan >= this.maxChannelValue)
+            if (memChan >= this.controler.getMaxChan())
                 memChan = 0;
             this.controler.setCurrentChannel(memChan);
         }
@@ -61,7 +59,7 @@ public class VirtualDeviceFirmware {
         else {
             memChan--;
             if (memChan < 0)
-               memChan = this.maxChannelValue-1;
+               memChan = this.controler.getMaxChan()-1;
             this.controler.setCurrentChannel(memChan);
         }
     }

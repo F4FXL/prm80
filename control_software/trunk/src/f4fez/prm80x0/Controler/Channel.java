@@ -70,7 +70,14 @@ public class Channel {
      * @param frequency new value of frequency
      */
     public void setFrequency(String frequency) {
-        this.frequency = frequency;
+        int sepPos = frequency.indexOf('.');
+        if (sepPos > 0) {
+            String left = frequency.substring(0, sepPos);
+            StringBuffer right = new StringBuffer(frequency.substring(sepPos+1));
+            while (right.length() < 6)
+                right.append('0');
+            this.frequency = left+"."+right.toString();
+        }
     }
     protected boolean shift;
 

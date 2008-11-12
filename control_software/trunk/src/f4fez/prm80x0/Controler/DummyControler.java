@@ -101,8 +101,8 @@ public class DummyControler implements Controler{
         
         int eepromPos = channel*2 + MemoryImage.RAM_AREA_ADRESS_FREQ;
         
-        byte wordHi = this.image.getEepromData(eepromPos+1);
-        byte wordLo = this.image.getEepromData(eepromPos);
+        byte wordHi = this.image.getRamData(eepromPos+1);
+        byte wordLo = this.image.getRamData(eepromPos);
         int pllWord = ((wordHi & 0xFF) << 8) + (wordLo & 0xFF);
         
         this.setRxPLLFrequecny(pllWord * (DummyControler.localOscillatorFrequency / this.pllRefCounter));
@@ -172,10 +172,12 @@ public class DummyControler implements Controler{
         return this.rxFreq;
         //return this.pllCounter * this.getPLLStep();
     }
+    @Override
         public void setTxPLLFrequecny(int frequency){
         this.txFreq = frequency;
     }
 
+    @Override
     public int getTxPLLFrequency() {
         return this.txFreq;
     }
@@ -208,10 +210,12 @@ public class DummyControler implements Controler{
         return 0;
     }
 
+    @Override
     public MemoryImage getMemoryImage() {
         return this.image;
     }
 
+    @Override
     public ChannelList getChannels() {
         ChannelList list = new ChannelList();
         int maxChan = this.image.getRamData(MemoryImage.RAM_ADRESS_MAX_CHAN);
@@ -227,6 +231,7 @@ public class DummyControler implements Controler{
         return list;
     }
 
+    @Override
     public void setChannels(ChannelList list) {
         for (int i= 0; i < list.countChannel(); i++) {
             int ramPos = i*2 + MemoryImage.RAM_AREA_ADRESS_FREQ;
