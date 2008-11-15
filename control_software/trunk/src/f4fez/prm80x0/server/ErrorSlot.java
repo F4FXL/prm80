@@ -38,10 +38,10 @@ public class ErrorSlot implements Runnable {
             Logger.getLogger(ErrorSlot.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    @Override
     public void run() {
-        System.out.println("Erreur : Serveur Plein");
             try {
-                out.print("PRM80 server V1.0>FU\n\r");
+                out.print("PRM80 server FU V1.0>\n\r");
                 out.flush();
                 int i = this.inStream.read();
                 out.close();

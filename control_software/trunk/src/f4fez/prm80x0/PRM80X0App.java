@@ -56,7 +56,7 @@ public class PRM80X0App extends SingleFrameApplication {
     public static void main(String[] args) {
         if (args.length > 0) {
             if (args[0].equals("server")) {
-                    f4fez.prm80x0.server.Server.runServer(args);
+                    f4fez.prm80x0.server.Server.runServerFromShell(args);
             }
         }            
         else

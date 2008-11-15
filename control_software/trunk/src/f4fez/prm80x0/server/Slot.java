@@ -28,10 +28,13 @@ public class Slot implements Runnable {
     private InputStream serialIn;
     private OutputStream serialOut;
     
+    private ServerEventListener eventListener;
+    
     public static final int CODE_QUIT = 129;
     public static final int CODE_PING = 128;
     
-    public Slot(String serialPort) {
+    public Slot(String serialPort,ServerEventListener eventListener) throws ServerException {
+        this.eventListener = eventListener;
         this.openSerialPort(serialPort);
     }
     
@@ -66,10 +69,9 @@ public class Slot implements Runnable {
                         while (socket != null) {
                             int j = serialIn.read();
                             outStream.write(j);
-                            System.out.print(Character.toChars(j));
+                            eventListener.charSent(Character.toChars(j)[0]);
                         }
                     } catch (IOException ex) {
-                        System.out.println("Erreur reading char");
                         System.exit(1);
                     }
                 }
@@ -78,7 +80,6 @@ public class Slot implements Runnable {
             
             // End wait for serial RX
             
-            System.out.println("Connection");
             outStream.write("PRM80 server Ok V1.0>".getBytes());
             while (this.socket != null) {
                 try {
@@ -93,7 +94,7 @@ public class Slot implements Runnable {
                             this.command(i);
                         else {
                             this.serialOut.write(i);
-                            System.out.print(Character.toChars(i));
+                            eventListener.charReceived(Character.toChars(i)[0]);
                         }
                     }
                 } catch (IOException ex) {
@@ -103,9 +104,8 @@ public class Slot implements Runnable {
                     this.socket.close();
                     this.socket = null;
                 }
-            }
-            System.out.println("Déconnexion");
-            this.serialPort.close();
+            }            
+            this.eventListener.disconnected();
             
         } catch (IOException ex) {
             Logger.getLogger(Slot.class.getName()).log(Level.SEVERE, null, ex);
@@ -129,11 +129,11 @@ public class Slot implements Runnable {
         } 
     }
     
-    private void openSerialPort(String port) {
+    private void openSerialPort(String port) throws ServerException {
             try {
                 CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(port);
                 if (portIdentifier.isCurrentlyOwned()) {
-                    System.out.println("Error: Serial port is currently in use");
+                    throw new ServerException("Serial port is currently in use");
                 } else {
                     CommPort commPort = portIdentifier.open(this.getClass().getName(), 2000);
                     if (commPort instanceof SerialPort) {
@@ -143,23 +143,34 @@ public class Slot implements Runnable {
                         serialOut = serialPort.getOutputStream();
                         
                     } else {
-                        System.out.println("Invalid serial port name.");
-                        System.exit(1);
+                        throw new ServerException("Invalid serial port name.");
                     }
                 }
             } catch (IOException ex) {
-                System.out.println("I/O error");
-                System.exit(1);
+                throw new ServerException("I/O error");
             } catch (UnsupportedCommOperationException ex) {
-                System.out.println("Unsupported serial port parameters");
-                System.exit(1);
+                throw new ServerException("Unsupported serial port parameters");
             } catch (PortInUseException ex) {
-                System.out.println("Serial port in use");
-                System.exit(1);
+                throw new ServerException("Serial port in use");
             } catch (NoSuchPortException ex) {
-                System.out.println("Serial port doesn't exist");
-                System.exit(1);
+                throw new ServerException("Serial port doesn't exist");
                 
             }
+    }
+    public void closeSlot() {
+        try {
+            Socket sock = this.socket;
+            this.socket = null;
+            Thread.sleep(2000); // Just to give time to end Thread
+            outStream.write(Slot.CODE_QUIT);
+            this.outStream.close();
+            this.inStream.close();
+            this.socket.close();
+            this.serialPort.close();
+        } catch (IOException ex) {
+            Logger.getLogger(Slot.class.getName()).log(Level.WARNING, null, ex);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Slot.class.getName()).log(Level.WARNING, null, ex);
+        }
     }
 }

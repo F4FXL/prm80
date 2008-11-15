@@ -17,12 +17,11 @@
 
 package f4fez.prm80x0.Controler;
 
-import gnu.io.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -102,27 +101,26 @@ public class TcpControler extends PRMControler{
     protected String waitChar(char c, int waitTime) {
         StringBuffer rx = new StringBuffer();
         try {
-                this.socket.setSoTimeout(waitTime);
-            try {
-                byte[] b = new byte[1];
+            this.socket.setSoTimeout(waitTime);
+            byte[] b = new byte[1];
 
-                do {
-                    b[0] = (byte) this.serialIn.read();
-                    if (b[0] == -1) {
-                        return null;
-                    }
-                    String s = new String(b);
-                    rx.append(s);
-                    Iterator<SerialListener> i = this.serialListeners.iterator();
-                    while (i.hasNext()) {
-                        i.next().dataReceived(s);
-                    }
-                } while (b[0] != c);
-            } catch (IOException ex) {
-                Logger.getLogger(TcpControler.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            do {
+                b[0] = (byte) this.serialIn.read();
+                if (b[0] == -1) {
+                    return null;
+                }
+                String s = new String(b);
+                rx.append(s);
+                Iterator<SerialListener> i = this.serialListeners.iterator();
+                while (i.hasNext()) {
+                    i.next().dataReceived(s);
+                }
+            } while (b[0] != c);
             return rx.toString();
-        } catch (SocketException ex) {
+        } catch (SocketTimeoutException ex) {
+                return null;
+        } catch (IOException ex) {
+                Logger.getLogger(TcpControler.class.getName()).log(Level.SEVERE, null, ex);
                 return null;
         }
     }

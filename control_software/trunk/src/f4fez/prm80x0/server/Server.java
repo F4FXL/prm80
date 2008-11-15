@@ -20,12 +20,14 @@ public class Server implements Runnable {
     private ServerSocket socketServer;
     private boolean running;
     private Slot serverSlot;
+    private ServerEventListener eventListener;
     
-    public Server(int port) {
+    public Server(ServerEventListener eventListener,int port, String serialPort) throws ServerException {
         try {
             this.port = port;
+            this.eventListener = eventListener;
             socketServer = new ServerSocket(port);
-            this.serverSlot = new Slot("/dev/ttyS0");
+            this.serverSlot = new Slot(serialPort, this.eventListener);
             new Thread(this).start();
         } catch (IOException ex) {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
@@ -33,29 +35,71 @@ public class Server implements Runnable {
     }
     
 
-    public static void runServer(String[] args) {
-        if (args.length != 2) {
-            System.out.println("Paramerters for server are : server <port>");
+    public static void runServerFromShell(String[] args) {
+        if (args.length < 2) {
+            System.out.println("Server command line call is : server <port> or server <port> <serial port>");
             System.exit(1);
         }
-        new Server (Integer.parseInt(args[1]));        
+        ServerEventListener eventListener;
+        eventListener = new ServerEventListener() {
+
+            @Override
+            public void connected(String clientAdress) {
+                System.out.println("Connected to "+ clientAdress);
+            }
+
+            @Override
+            public void disconnected() {
+                System.out.println("Disconnected");
+            }
+
+            @Override
+            public void connectionRefused(String clientAdress) {
+                System.out.println("Connection refused to "+ clientAdress);
+            }
+
+            @Override
+            public void charReceived(char data) {                
+            }
+
+            @Override
+            public void charSent(char data) {
+                System.out.print(data);
+            }
+        
+        };
+        
+        System.out.println("Server started");        
+        try {
+            new Server(eventListener, Integer.parseInt(args[1]), "/dev/ttyS0");
+        } catch (ServerException ex) {
+            System.out.println("Error : "+ex.getMessage());
+        }
     }
 
     
     @Override
     public void run() {
-        this.running = true;
-        System.out.println("Server started");
-        while(this.running) {
-            try {
-                Socket socket = this.socketServer.accept();
-                if (this.serverSlot.isFree())
-                    this.serverSlot.connect(socket);
-                else
-                    new ErrorSlot().connect(socket);
-            } catch (IOException ex) {
-                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+        try {
+            this.running = true;
+            while (this.running) {
+                try {
+                    Socket socket = this.socketServer.accept();
+                    if (this.serverSlot.isFree()) {
+                        this.eventListener.connected(socket.getInetAddress().getHostAddress());
+                        this.serverSlot.connect(socket);
+                    } else {
+                        this.eventListener.connectionRefused(socket.getInetAddress().getHostAddress());
+                        new ErrorSlot().connect(socket);
+                    }
+                } catch (IOException ex) {
+                    Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
+            this.serverSlot.closeSlot();
+            this.socketServer.close();
+        } catch (IOException ex) {
+            Logger.getLogger(Server.class.getName()).log(Level.WARNING, null, ex);
         }
     }
 

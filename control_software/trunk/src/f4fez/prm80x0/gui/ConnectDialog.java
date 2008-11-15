@@ -35,12 +35,13 @@ public class ConnectDialog extends javax.swing.JDialog {
         cancelButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(f4fez.prm80x0.PRM80X0App.class).getContext().getResourceMap(ConnectDialog.class);
+        setTitle(resourceMap.getString("Form.title")); // NOI18N
         setName("Form"); // NOI18N
 
         jPanel1.setName("jPanel1"); // NOI18N
         jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(f4fez.prm80x0.PRM80X0App.class).getContext().getResourceMap(ConnectDialog.class);
         jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
         jLabel1.setName("jLabel1"); // NOI18N
         jPanel1.add(jLabel1);

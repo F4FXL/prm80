@@ -104,6 +104,7 @@ public class PRM80X0View extends FrameView {
             TaskMonitor taskMonitor = new TaskMonitor(getApplication().getContext());
             taskMonitor.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
 
+            @Override
                 public void propertyChange(java.beans.PropertyChangeEvent evt) {
                     String propertyName = evt.getPropertyName();
                     if ("started".equals(propertyName)) {
@@ -218,8 +219,8 @@ public class PRM80X0View extends FrameView {
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
         connectMenuItem = new javax.swing.JMenuItem();
-        connectVirtualMenuItem = new javax.swing.JMenuItem();
         connectTcpMenuItem = new javax.swing.JMenuItem();
+        connectVirtualMenuItem = new javax.swing.JMenuItem();
         disconnectMenuItem = new javax.swing.JMenuItem();
         javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
         ToolsMenu = new javax.swing.JMenu();
@@ -395,15 +396,6 @@ public class PRM80X0View extends FrameView {
         });
         fileMenu.add(connectMenuItem);
 
-        connectVirtualMenuItem.setText(resourceMap.getString("connectVirtualMenuItem.text")); // NOI18N
-        connectVirtualMenuItem.setName("connectVirtualMenuItem"); // NOI18N
-        connectVirtualMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                connectVirtualMenuItemActionPerformed(evt);
-            }
-        });
-        fileMenu.add(connectVirtualMenuItem);
-
         connectTcpMenuItem.setText(resourceMap.getString("connectTcpMenuItem.text")); // NOI18N
         connectTcpMenuItem.setName("connectTcpMenuItem"); // NOI18N
         connectTcpMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -412,6 +404,15 @@ public class PRM80X0View extends FrameView {
             }
         });
         fileMenu.add(connectTcpMenuItem);
+
+        connectVirtualMenuItem.setText(resourceMap.getString("connectVirtualMenuItem.text")); // NOI18N
+        connectVirtualMenuItem.setName("connectVirtualMenuItem"); // NOI18N
+        connectVirtualMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                connectVirtualMenuItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(connectVirtualMenuItem);
 
         disconnectMenuItem.setText(resourceMap.getString("disconnectMenuItem.text")); // NOI18N
         disconnectMenuItem.setEnabled(false);
@@ -741,6 +742,7 @@ public class PRM80X0View extends FrameView {
 private void connectTcpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectTcpMenuItemActionPerformed
     JFrame mainFrame = PRM80X0App.getApplication().getMainFrame();
     ConnectDialog cd = new ConnectDialog(mainFrame, true);
+    cd.setLocationRelativeTo(mainFrame);
     cd.setVisible(true);
     if (cd.getServerAdress() != null) {        
         try {
