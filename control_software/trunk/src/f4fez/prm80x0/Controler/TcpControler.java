@@ -62,24 +62,32 @@ public class TcpControler extends PRMControler{
             this.serialOut = this.socket.getOutputStream();
             
             String serverIdent = this.waitCommandAnswer(5000);
-            if (!serverIdent.contains("PRM80 server Ok"))
+            if (!serverIdent.contains("PRM80 server Ok")) {
+                serialIn.close();
+                serialOut.close();
+                this.socket.close();
                 throw new SerialPortException("Server identification error");
-
+            }
             String ident = this.sendCommand("v");
-            if (ident == null)
-                throw new SerialPortException("PRM80 not detected");
+            if (ident == null) {
+                this.disconnectPRM();
+                throw new SerialPortException("PRM80 not detected");                
+            }
             if (ident.contains("PRM8060"))
                 this.prmType = Controler.PRM8060;
             else if (ident.contains("PRM8070"))
                 this.prmType = Controler.PRM8070;
-            else
+            else {
+                this.disconnectPRM();
                 throw new SerialPortException("Unknow PRM80 device");
+            }                
             this.majorFirmwareVersion = Integer.parseInt(ident.substring(9, 10));
             this.minorFirmwareVersion = Integer.parseInt(ident.substring(11, 12));                        
             this.connected = true;
         } catch (UnknownHostException ex) {
             throw new SerialPortException("Host not found");
         } catch (IOException ex) {
+            this.disconnectPRM();
             throw new SerialPortException("Could not connect to host");
         }
     }    
