@@ -245,5 +245,10 @@ public class DummyControler implements Controler{
         this.image.setRamData(MemoryImage.RAM_ADRESS_MAX_CHAN, (byte)list.countChannel());
     }
 
+    @Override
+    public void setPRMStateChangeListener(PRMStateChangeListener listener) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 
 }

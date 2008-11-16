@@ -6,6 +6,8 @@
 package f4fez.prm80x0.Controler;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -19,6 +21,18 @@ public abstract class PRMControler implements Controler{
     protected int prmType;
     private int pllStep = 12500; 
     protected ArrayList<SerialListener> serialListeners;
+    protected Thread updateThread;
+    protected int updateSleepTime;
+    protected boolean connected;
+    protected PRMStateChangeListener changeListener;
+    private String holdStateString;
+    
+    protected int rxFreq;
+    protected int txFrreq;
+    protected int channel;
+    protected int squelch;
+    protected int volume;
+    protected int mode;
     
     public PRMControler() {
         this.serialListeners = new ArrayList();
@@ -51,9 +65,8 @@ public abstract class PRMControler implements Controler{
     }
 
     @Override
-    public int getRxPLLFrequency() {
-        int freq = Integer.parseInt(this.sendCommand("e").substring(12, 16), 16);
-        return freq*this.pllStep-DummyControler.IF;
+    public int getRxPLLFrequency() {        
+        return this.rxFreq;
     }
     
     @Override
@@ -64,8 +77,7 @@ public abstract class PRMControler implements Controler{
 
     @Override
     public int getTxPLLFrequency() {
-        int freq = Integer.parseInt(this.sendCommand("e").substring(16, 20), 16);
-        return freq*this.pllStep;
+        return this.txFrreq;
     }
     
     protected void setPLLFrequencies(int rxFreq, int txFreq) {
@@ -92,7 +104,7 @@ public abstract class PRMControler implements Controler{
 
     @Override
     public int readVolume() {
-        return (255-Integer.parseInt(this.sendCommand("e").substring(8, 10), 16)) >> 4;
+        return this.volume;
     }
 
     @Override
@@ -102,7 +114,7 @@ public abstract class PRMControler implements Controler{
 
     @Override
     public int readSquelch() {
-        return Integer.parseInt(this.sendCommand("e").substring(6, 8), 16);
+        return this.squelch;
     }
 
     @Override
@@ -123,7 +135,7 @@ public abstract class PRMControler implements Controler{
 
     @Override
     public int getCurrentChannel() {        
-        return Integer.parseInt(this.sendCommand("e").substring(2, 4), 16);
+        return this.channel;
     }
 
     @Override
@@ -139,8 +151,7 @@ public abstract class PRMControler implements Controler{
 
     @Override
     public int getPower() {
-        int mode = Integer.parseInt(this.sendCommand("e").substring(0, 2), 16);
-        if ( (mode & 2) == 2)
+        if ( (this.mode & 2) == 2)
             return SerialControler.POWER_LO;
         else
             return SerialControler.POWER_HI;
@@ -192,14 +203,14 @@ public abstract class PRMControler implements Controler{
     protected String sendCommand (String command) {
         return this.sendCommand(command, PRMControler.serialTimeout);
     }
-    protected String sendCommand (String command, int waitDuration) {
+    protected synchronized String sendCommand (String command, int waitDuration) {
         this.send(command);
         return waitCommandAnswer(waitDuration);
     }
     
     protected abstract void send(String data);
     
-    protected String waitCommandAnswer(int waitTime) {
+    protected synchronized String waitCommandAnswer(int waitTime) {
         return this.waitChar('>', waitTime);
     }
     
@@ -228,5 +239,49 @@ public abstract class PRMControler implements Controler{
     @Override
     public void setChannels(ChannelList list) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    protected synchronized void updateState() {
+        String stateLine = this.sendCommand("e");
+        try {
+            if (stateLine != null && stateLine.length() == 23 && !stateLine.equals(this.holdStateString)) {
+                int freq = Integer.parseInt(stateLine.substring(12, 16), 16);
+                this.rxFreq = freq*this.pllStep-DummyControler.IF;
+                freq = Integer.parseInt(stateLine.substring(16, 20), 16);
+                this.txFrreq = freq*this.pllStep;
+                this.volume =  (255-Integer.parseInt(stateLine.substring(8, 10), 16)) >> 4;
+                this.squelch = Integer.parseInt(stateLine.substring(6, 8), 16);
+                this.channel = Integer.parseInt(stateLine.substring(2, 4), 16);
+                this.mode = Integer.parseInt(stateLine.substring(0, 2), 16);
+                this.holdStateString = stateLine;
+                if (this.changeListener != null)
+                    this.changeListener.stateUpdated();
+            }
+        } catch (NumberFormatException e) {
+        }
+    }
+    
+    protected void runUpdateThread(int sleepTime) {
+        this.updateSleepTime = sleepTime;
+        this.updateThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    while(connected) {
+                        updateState();
+                        Thread.sleep(updateSleepTime);
+                    }
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(PRMControler.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+        });
+        this.updateThread.start();
+    }
+    
+    @Override
+    public void setPRMStateChangeListener(PRMStateChangeListener listener) {
+        this.changeListener = listener;
     }
 }

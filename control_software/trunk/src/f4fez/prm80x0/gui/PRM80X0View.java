@@ -40,6 +40,7 @@ import javax.swing.JOptionPane;
 import f4fez.prm80x0.Controler.CommunicationException;
 import f4fez.prm80x0.Controler.DummyControler;
 import f4fez.prm80x0.Controler.Controler;
+import f4fez.prm80x0.Controler.PRMStateChangeListener;
 import f4fez.prm80x0.Controler.SerialControler;
 import f4fez.prm80x0.Controler.TcpControler;
 import f4fez.prm80x0.gui.serialterminal.TerminalDialog;
@@ -585,6 +586,18 @@ public class PRM80X0View extends FrameView {
             
             this.updateValues();
             
+            this.vdf.getPRMControler().setPRMStateChangeListener(new PRMStateChangeListener() {
+                    @Override
+                    public void stateUpdated() {
+                        try {
+                            updateValues();
+                        } catch (CommunicationException ex) {
+                            Logger.getLogger(PRM80X0View.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                
+            });
+            
             this.setEnableControls(true);
        } catch (CommunicationException ex) {
             this.disconnectMenuItem.setEnabled(false);
@@ -762,6 +775,18 @@ private void connectTcpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
             this.connectTcpMenuItem.setEnabled(false);
             
             this.updateValues();
+            
+            this.vdf.getPRMControler().setPRMStateChangeListener(new PRMStateChangeListener() {
+                    @Override
+                    public void stateUpdated() {
+                        try {
+                            updateValues();
+                        } catch (CommunicationException ex) {
+                            Logger.getLogger(PRM80X0View.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                
+            });
             
             this.setEnableControls(true);
         } catch (CommunicationException ex) {

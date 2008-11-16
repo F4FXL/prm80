@@ -205,4 +205,10 @@ public interface Controler {
      * @return list of channels
      */
     public void setChannels(ChannelList list);
+    
+    /**
+     * Set listener called when state change
+     * @param listener
+     */
+    public void setPRMStateChangeListener(PRMStateChangeListener listener);
 }

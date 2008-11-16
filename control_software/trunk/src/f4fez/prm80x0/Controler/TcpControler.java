@@ -32,7 +32,7 @@ import java.util.logging.Logger;
  * @author fmazen
  */
 public class TcpControler extends PRMControler{
-    private boolean connected;
+    
     //private SerialPort serialPort;
     private Socket socket;
     private InputStream serialIn;
@@ -41,6 +41,8 @@ public class TcpControler extends PRMControler{
     @Override
     public int connectPRM(String server) throws SerialPortException {
         this.openSocket(server);
+        updateState();
+        this.runUpdateThread(1000);
         return 0;
     }
 
