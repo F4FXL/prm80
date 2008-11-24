@@ -233,7 +233,9 @@ public abstract class PRMControler implements Controler{
 
     @Override
     public ChannelList getChannels() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        ChannelList list = new ChannelList();
+        String str = this.sendCommand("c");
+        return list;
     }
 
     @Override
