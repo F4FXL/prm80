@@ -286,4 +286,9 @@ public abstract class PRMControler implements Controler{
     public void setPRMStateChangeListener(PRMStateChangeListener listener) {
         this.changeListener = listener;
     }
+    
+    @Override
+    public boolean isConnected() {
+        return this.connected;
+    }
 }

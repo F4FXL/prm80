@@ -211,4 +211,10 @@ public interface Controler {
      * @param listener
      */
     public void setPRMStateChangeListener(PRMStateChangeListener listener);
+    
+    /**
+     * Test is the controler is currently connected
+     * @return
+     */
+    public boolean isConnected();
 }

@@ -30,15 +30,14 @@ import java.util.logging.Logger;
  * @author fmazen
  */
 public class SerialControler extends PRMControler{
-    private boolean connected;
-    private SerialPort serialPort;
+   private SerialPort serialPort;
     private InputStream serialIn;
     private OutputStream serialOut;
 
     @Override
     public int connectPRM(String port) throws SerialPortException {
         this.openSerialPort(port);        
-        return 0;
+        return this.prmType;
     }
 
     @Override
@@ -90,6 +89,10 @@ public class SerialControler extends PRMControler{
             } catch (NoSuchPortException ex) {
                 throw new SerialPortException("Serial port doesn't exist");
                 
+            }
+            finally {
+                if (this.serialPort != null)
+                    this.serialPort.close();
             }
     }
 

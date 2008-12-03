@@ -45,10 +45,10 @@ public class DummyControler implements Controler{
     private MemoryImage image;
     
     @Override
-    public int connectPRM(String port) {
-        this.connected = true;
+    public int connectPRM(String port) {        
         image = new MemoryImage();
         this.resetPRM();        
+        this.connected = true;
         return DummyControler.PRM8060;        
     }
 
@@ -143,7 +143,7 @@ public class DummyControler implements Controler{
 
     @Override
     public int getMajorFirmwareVersion() {
-        return 1;
+        return 3;
     }
 
     @Override
@@ -248,6 +248,11 @@ public class DummyControler implements Controler{
     @Override
     public void setPRMStateChangeListener(PRMStateChangeListener listener) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public boolean isConnected() {
+        return this.connected;
     }
 
 

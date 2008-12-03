@@ -39,15 +39,15 @@ public class TcpControler extends PRMControler{
     private OutputStream serialOut;
 
     @Override
-    public int connectPRM(String server) throws SerialPortException {
+    public synchronized int connectPRM(String server) throws SerialPortException {
         this.openSocket(server);
         updateState();
         this.runUpdateThread(1000);
-        return 0;
+        return this.prmType;
     }
 
     @Override
-    public void disconnectPRM() {
+    public synchronized void disconnectPRM() {
         this.connected = false;
         try {
             serialIn.close();
@@ -57,7 +57,7 @@ public class TcpControler extends PRMControler{
         catch(Exception e) { }
     }
 
-    private void openSocket(String server) throws SerialPortException {
+    private synchronized void openSocket(String server) throws SerialPortException {
         try {
             this.socket = new Socket(server, 8060);        
             this.serialIn = this.socket.getInputStream();
@@ -95,7 +95,7 @@ public class TcpControler extends PRMControler{
     }    
 
     @Override
-    protected void send(String data) {
+    protected synchronized void send(String data) {
         try {            
             this.serialOut.write(data.getBytes());
             Iterator<SerialListener> i = this.serialListeners.iterator();
@@ -108,7 +108,7 @@ public class TcpControler extends PRMControler{
     }
     
     @Override
-    protected String waitChar(char c, int waitTime) {
+    protected synchronized String waitChar(char c, int waitTime) {
         StringBuffer rx = new StringBuffer();
         try {
             this.socket.setSoTimeout(waitTime);

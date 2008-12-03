@@ -700,7 +700,6 @@ public class PRM80X0View extends FrameView {
             cd.setLocationRelativeTo(mainFrame);
             cd.setConfiguration(this.config);           
             cd.setVisible(true);
-            System.out.println(cd.getConfiguration().getSerialPort());
     }//GEN-LAST:event_configurationMenuItemActionPerformed
 
     private void expertMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_expertMenuItemActionPerformed
