@@ -6,6 +6,8 @@
 
 package f4fez.prm80x0.gui;
 
+import f4fez.prm80x0.Configuration;
+
 /**
  *
  * @author  f4fez
@@ -13,9 +15,12 @@ package f4fez.prm80x0.gui;
 public class ConnectDialog extends javax.swing.JDialog {
 
     /** Creates new form ConnectDialog */
-    public ConnectDialog(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+    public ConnectDialog(PRM80X0View parent, boolean modal) {
+        super(parent.getFrame(), modal);
+        this.config = parent.getConfiguration();
+        this.setLocationRelativeTo(parent.getFrame());        
         initComponents();
+        this.serverField.setText(config.getLastServerURI());
     }
 
     /** This method is called from within the constructor to
@@ -88,22 +93,6 @@ private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     this.setVisible(false);
 }//GEN-LAST:event_cancelButtonActionPerformed
 
-    /**
-    * @param args the command line arguments
-    */
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                ConnectDialog dialog = new ConnectDialog(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }
     
     public String getServerAdress() {
         return this.serverAdress;
@@ -118,4 +107,5 @@ private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     private javax.swing.JTextField serverField;
     // End of variables declaration//GEN-END:variables
     private String serverAdress;
+    private Configuration config;
 }

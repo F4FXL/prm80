@@ -29,11 +29,12 @@ public class Configuration {
     private String serialPort;
     private boolean expertMode;
     private Preferences prefs;
+    private String lastServerURI;
     
-    private static String prefRoot = "f4fez/prm80";
-    private static String prefSerialPort = "serialPort";
-    private static String prefExpertMode = "expertMode";
-    
+    private final static String prefRoot = "f4fez/prm80";
+    private final static String prefSerialPort = "serialPort";
+    private final static String prefExpertMode = "expertMode";
+    private final static String prefLastURI = "lastServerURI";   
     public Configuration() {
         this.prefs = Preferences.userRoot().node(prefRoot);
         Enumeration thePorts = CommPortIdentifier.getPortIdentifiers();
@@ -45,6 +46,7 @@ public class Configuration {
             }
         }
         this.expertMode = this.prefs.getBoolean(Configuration.prefExpertMode, false);
+        this.lastServerURI = this.prefs.get(Configuration.prefLastURI, "prm80://127.0.0.1");
     }            
     
     public void setSerialPort(String port) {
@@ -62,5 +64,16 @@ public class Configuration {
     
     public void setEpertMode(boolean expert) {
         this.prefs.putBoolean(Configuration.prefExpertMode, expert);
+    }
+    
+    public void setLastServerURI(String uri) {
+        if (!this.lastServerURI.equals(uri)) {
+            this.prefs.put(Configuration.prefLastURI, uri);        
+            this.lastServerURI = uri;
+        }
+    }
+    
+    public String getLastServerURI() {
+        return this.lastServerURI;
     }
 }

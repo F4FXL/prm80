@@ -22,6 +22,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -59,7 +61,15 @@ public class TcpControler extends PRMControler{
 
     private synchronized void openSocket(String server) throws SerialPortException {
         try {
-            this.socket = new Socket(server, 8060);        
+            URI uri = new URI(server);
+            if (uri.getScheme() == null || !uri.getScheme().equals("prm80"))
+                throw new SerialPortException("Server adress should start with: \"prm80://\"");
+            int port = uri.getPort();
+            if (port == -1)
+                    port = 8060;
+            if (uri.getHost() == null)
+                throw new SerialPortException("Invalid server adress");
+            this.socket = new Socket(uri.getHost(), port);        
             this.serialIn = this.socket.getInputStream();
             this.serialOut = this.socket.getOutputStream();
             
@@ -86,6 +96,8 @@ public class TcpControler extends PRMControler{
             this.majorFirmwareVersion = Integer.parseInt(ident.substring(9, 10));
             this.minorFirmwareVersion = Integer.parseInt(ident.substring(11, 12));                        
             this.connected = true;
+        } catch (URISyntaxException ex) {
+            throw new SerialPortException("Invalid server adress");
         } catch (UnknownHostException ex) {
             throw new SerialPortException("Host not found");
         } catch (IOException ex) {

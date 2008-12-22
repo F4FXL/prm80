@@ -753,14 +753,15 @@ public class PRM80X0View extends FrameView {
 
 private void connectTcpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectTcpMenuItemActionPerformed
     JFrame mainFrame = PRM80X0App.getApplication().getMainFrame();
-    ConnectDialog cd = new ConnectDialog(mainFrame, true);
-    cd.setLocationRelativeTo(mainFrame);
+    ConnectDialog cd = new ConnectDialog(this, true);
+    //cd.setLocationRelativeTo(mainFrame);
     cd.setVisible(true);
     if (cd.getServerAdress() != null) {        
         try {
             TcpControler prmControler = new TcpControler();
             prmControler.connectPRM(cd.getServerAdress());
-                        
+            
+            this.config.setLastServerURI(cd.getServerAdress());
             // Si terminal ouvert alors ajouter listener
             if (this.serialSpy != null )
                 prmControler.addSerialListener(this.serialSpy);
@@ -819,6 +820,10 @@ private void connectTcpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
         
         this.hpLabel.setVisible(this.vdf.isHighPower());
         this.lpLabel.setVisible(!this.vdf.isHighPower());
+    }
+    
+    public Configuration getConfiguration() {
+        return this.config;
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
