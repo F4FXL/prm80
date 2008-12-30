@@ -34,6 +34,8 @@ public abstract class PRMControler implements Controler{
     protected int volume;
     protected int mode;
     
+    protected final static int RETRY = 5;
+    
     public PRMControler() {
         this.serialListeners = new ArrayList();
     }
@@ -62,6 +64,7 @@ public abstract class PRMControler implements Controler{
     @Override
     public void setRxPLLFrequecny(int frequency) {
         this.setPLLFrequencies(frequency, this.getTxPLLFrequency());
+        this.updateState();
     }
 
     @Override
@@ -72,6 +75,7 @@ public abstract class PRMControler implements Controler{
     @Override
     public void setTxPLLFrequecny(int frequency) {
         this.setPLLFrequencies(this.getRxPLLFrequency(), frequency);
+        this.updateState();
     }
 
 
@@ -80,7 +84,7 @@ public abstract class PRMControler implements Controler{
         return this.txFrreq;
     }
     
-    protected void setPLLFrequencies(int rxFreq, int txFreq) {
+    protected synchronized void setPLLFrequencies(int rxFreq, int txFreq) {
         int rxfreq = (rxFreq + DummyControler.IF) / this.pllStep;
         int txfreq = (txFreq) / this.pllStep;
         this.send("r");
@@ -95,6 +99,7 @@ public abstract class PRMControler implements Controler{
             sFreq = "0" + sFreq;
         this.send(sFreq);
         this.waitChar('>', PRMControler.serialTimeout);
+        this.updateState();
     }
     
     @Override
@@ -118,7 +123,7 @@ public abstract class PRMControler implements Controler{
     }
 
     @Override
-    public void writeSquelch(int level) {
+    public synchronized void writeSquelch(int level) {
         this.send("f");
         this.waitChar(':', PRMControler.serialTimeout);
         String sChan = Integer.toString(level);
@@ -126,6 +131,7 @@ public abstract class PRMControler implements Controler{
             sChan = "0"+sChan;
         this.send(sChan);
         this.waitChar('>', PRMControler.serialTimeout);
+        this.updateState();
     }
 
     @Override
@@ -139,7 +145,7 @@ public abstract class PRMControler implements Controler{
     }
 
     @Override
-    public void setCurrentChannel(int channel) {
+    public synchronized void setCurrentChannel(int channel) {
         this.send("n");
         this.waitChar(':', PRMControler.serialTimeout);
         String sChan = Integer.toString(channel);
@@ -147,6 +153,7 @@ public abstract class PRMControler implements Controler{
             sChan = "0"+sChan;
         this.send(sChan);
         this.waitChar('>', PRMControler.serialTimeout);
+        this.updateState();
     }
 
     @Override
@@ -158,7 +165,7 @@ public abstract class PRMControler implements Controler{
     }
 
     @Override
-    public void setPower(int power) {
+    public synchronized void setPower(int power) {
         int mode = Integer.parseInt(this.sendCommand("e").substring(0, 2), 16);
         mode = mode ^ 2;
         this.send("d");
@@ -168,6 +175,7 @@ public abstract class PRMControler implements Controler{
             sMode = "0"+sMode;
         this.send(sMode);
         this.waitChar('>', PRMControler.serialTimeout);
+        this.updateState();
     }
 
     @Override
@@ -177,7 +185,7 @@ public abstract class PRMControler implements Controler{
 
     @Override
     public void resetPRM() {
-        
+        this.sendCommand("0");
     }
 
     @Override
@@ -192,16 +200,32 @@ public abstract class PRMControler implements Controler{
     
     @Override
     public void RAM2EEPROM() {
-        
+        this.sendCommand("x");
     }
 
     @Override
     public void EEPROM2RAM() {
-        
+        this.sendCommand("s");
     }    
+    
+    protected String sendCommand (String command, String regex) {
+        return this.sendCommand(command, PRMControler.serialTimeout, regex);
+    }
     
     protected String sendCommand (String command) {
         return this.sendCommand(command, PRMControler.serialTimeout);
+    }
+    protected synchronized String sendCommand (String command, int waitDuration, String regex) {
+        String result = null;
+        for (int i= 0; i < RETRY && result == null; i++) {
+            if (i > 0)
+                this.sendEscapeCommand();
+            result = this.sendCommand(command, waitDuration);
+            if (regex != null && (result == null || !result.matches(regex)))
+                result = null;
+        }
+        return result;
+            
     }
     protected synchronized String sendCommand (String command, int waitDuration) {
         this.send(command);
@@ -244,22 +268,25 @@ public abstract class PRMControler implements Controler{
     }
 
     protected synchronized void updateState() {
-        String stateLine = this.sendCommand("e");
-        try {
-            if (stateLine != null && stateLine.length() == 23 && !stateLine.equals(this.holdStateString)) {
-                int freq = Integer.parseInt(stateLine.substring(12, 16), 16);
-                this.rxFreq = freq*this.pllStep-DummyControler.IF;
-                freq = Integer.parseInt(stateLine.substring(16, 20), 16);
-                this.txFrreq = freq*this.pllStep;
-                this.volume =  (255-Integer.parseInt(stateLine.substring(8, 10), 16)) >> 4;
-                this.squelch = Integer.parseInt(stateLine.substring(6, 8), 16);
-                this.channel = Integer.parseInt(stateLine.substring(2, 4), 16);
-                this.mode = Integer.parseInt(stateLine.substring(0, 2), 16);
-                this.holdStateString = stateLine;
-                if (this.changeListener != null)
-                    this.changeListener.stateUpdated();
+        String stateLine = this.sendCommand("e", "^[0-9A-F]{20}\r\n>$");
+        
+        if (stateLine != null) {
+            try {
+                if (stateLine != null && stateLine.length() == 23 && !stateLine.equals(this.holdStateString)) {
+                    int freq = Integer.parseInt(stateLine.substring(12, 16), 16);
+                    this.rxFreq = freq*this.pllStep-DummyControler.IF;
+                    freq = Integer.parseInt(stateLine.substring(16, 20), 16);
+                    this.txFrreq = freq*this.pllStep;
+                    this.volume =  (255-Integer.parseInt(stateLine.substring(8, 10), 16)) >> 4;
+                    this.squelch = Integer.parseInt(stateLine.substring(6, 8), 16);
+                    this.channel = Integer.parseInt(stateLine.substring(2, 4), 16);
+                    this.mode = Integer.parseInt(stateLine.substring(0, 2), 16);
+                    this.holdStateString = stateLine;
+                    if (this.changeListener != null)
+                        this.changeListener.stateUpdated();
+                }
+            } catch (NumberFormatException e) {
             }
-        } catch (NumberFormatException e) {
         }
     }
     
@@ -290,5 +317,10 @@ public abstract class PRMControler implements Controler{
     @Override
     public boolean isConnected() {
         return this.connected;
+    }
+    
+    public boolean sendEscapeCommand() {
+        this.send("!");
+        return waitCommandAnswer(PRMControler.serialTimeout) != null;
     }
 }

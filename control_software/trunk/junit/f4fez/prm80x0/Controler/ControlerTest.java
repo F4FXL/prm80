@@ -125,6 +125,17 @@ public abstract class ControlerTest {
     }
 
     /**
+     * Test of getRxPLLFrequency method, of class Controler.
+     */
+    @Test
+    public void testGetRxPLLFrequency() throws Exception {
+        System.out.println("getRxPLLFrequency");
+        instance.connectPRM(port);
+        int result = instance.getRxPLLFrequency();
+        System.out.println("   PRM80 PLL RX frequency : "+ Integer.toString(result));
+    }
+    
+    /**
      * Test of setRxPLLFrequecny method, of class Controler.
      */
     @Test
@@ -144,16 +155,16 @@ public abstract class ControlerTest {
     }
 
     /**
-     * Test of getRxPLLFrequency method, of class Controler.
+     * Test of getTxPLLFrequency method, of class Controler.
      */
     @Test
-    public void testGetRxPLLFrequency() throws Exception {
-        System.out.println("getRxPLLFrequency");
+    public void testGetTxPLLFrequency() throws Exception {
+        System.out.println("getTxPLLFrequency");
         instance.connectPRM(port);
-        int result = instance.getRxPLLFrequency();
-        System.out.println("   PRM80 PLL RX frequency : "+ Integer.toString(result));
+        int result = instance.getTxPLLFrequency();
+        System.out.println("   PRM80 PLL TX frequency : "+ Integer.toString(result));
     }
-
+    
     /**
      * Test of setTxPLLFrequecny method, of class Controler.
      */
@@ -173,16 +184,6 @@ public abstract class ControlerTest {
             fail("Can't set TX frequency");
     }
 
-    /**
-     * Test of getTxPLLFrequency method, of class Controler.
-     */
-    @Test
-    public void testGetTxPLLFrequency() throws Exception {
-        System.out.println("getTxPLLFrequency");
-        instance.connectPRM(port);
-        int result = instance.getTxPLLFrequency();
-        System.out.println("   PRM80 PLL TX frequency : "+ Integer.toString(result));
-    }
 
     /**
      * Test of isPllLocked method, of class Controler.
@@ -327,14 +328,16 @@ public abstract class ControlerTest {
     /**
      * Test of reloadRAM method, of class Controler.
      */
-    @Test
+    /*@Test
     public void testReloadRAM() throws Exception {
         System.out.println("reloadRAM");
         instance.connectPRM(port);
         instance.reloadRAM();
         int result = instance.getCurrentChannel();
+        if (result != 0)
+            fail("PRM RAM not reloaded");
         System.out.println("   PRM80 Current channel : "+ Integer.toString(result));
-    }
+    }*/
 
     /**
      * Test of resetPRM method, of class Controler.
@@ -344,8 +347,6 @@ public abstract class ControlerTest {
         System.out.println("resetPRM");
         instance.connectPRM(port);
         instance.resetPRM();
-        int result = instance.getCurrentChannel();
-        System.out.println("   PRM80 Current channel : "+ Integer.toString(result));
     }
 
     /**
@@ -431,10 +432,15 @@ public abstract class ControlerTest {
     public void testSetChannels() throws Exception {
         System.out.println("setChannels");
         instance.connectPRM(port);
-        ChannelList list = null;
-        //instance.setChannels(list);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        ChannelList oldList = instance.getChannels();
+        ChannelList list = new ChannelList();
+        list.addChannel(new Channel("144000000", false));
+        list.addChannel(new Channel("145000000", false));
+        instance.setChannels(list);
+        ChannelList newList = instance.getChannels();
+        if (newList.countChannel() != 2)
+            fail("Channel list not set");
+        instance.setChannels(oldList);        
     }
 
 }

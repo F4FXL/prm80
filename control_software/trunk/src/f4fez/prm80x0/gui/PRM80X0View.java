@@ -163,7 +163,7 @@ public class PRM80X0View extends FrameView {
         this.upButton.setEnabled(enable);
         this.downButton.setEnabled(enable);
         this.volumeLabel.setEnabled(enable);
-        this.volumeSlider.setEnabled(enable);
+        this.volumeSlider.setEnabled(false/*enable*/);
         this.squelchLabel.setEnabled(enable);
         this.squelchSpinner.setEnabled(enable);
         this.vfoToggleButton.setEnabled(enable);

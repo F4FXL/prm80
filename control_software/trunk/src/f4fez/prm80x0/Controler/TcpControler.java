@@ -42,7 +42,9 @@ public class TcpControler extends PRMControler{
 
     @Override
     public synchronized int connectPRM(String server) throws SerialPortException {
-        this.openSocket(server);
+        if (this.connected)
+            throw new SerialPortException("Already conedcted");
+        this.openSocket(server);        
         updateState();
         this.runUpdateThread(1000);
         return this.prmType;
@@ -80,7 +82,7 @@ public class TcpControler extends PRMControler{
                 this.socket.close();
                 throw new SerialPortException("Server identification error");
             }
-            String ident = this.sendCommand("v");
+            String ident = this.sendCommand("v", "^PRM80[67]0 V[3-9].[0-9]\r\n>$");
             if (ident == null) {
                 this.disconnectPRM();
                 throw new SerialPortException("PRM80 not detected");                

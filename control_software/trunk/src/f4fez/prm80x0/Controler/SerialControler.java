@@ -64,7 +64,7 @@ public class SerialControler extends PRMControler{
                         serialIn = serialPort.getInputStream();
                         serialOut = serialPort.getOutputStream();
                         
-                        String ident = this.sendCommand("v");
+                        String ident = this.sendCommand("v", "^PRM80[67]0 V[3-9].[0-9]\r\n>$");
                         if (ident == null)
                             throw new SerialPortException("PRM80 not detected");
                         if (ident.contains("PRM8060"))
