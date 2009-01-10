@@ -191,7 +191,7 @@ public class DummyControler implements Controler{
             this.image.setEepromData(eepromPos, wordLo);
             this.image.setEepromData(eepromPos+1, wordHi);
         }
-        this.image.setEepromData(MemoryImage.RAM_ADRESS_MAX_CHAN, (byte) array.size());        
+        this.image.setEepromData(MemoryImage.RAM_ADRESS_MAX_CHAN, (byte) (array.size()-1));        
         this.image.setEepromData(MemoryImage.RAM_ADRESS_SQUELCH, (byte) 5);
     }
 
@@ -219,7 +219,7 @@ public class DummyControler implements Controler{
     public ChannelList getChannels() {
         ChannelList list = new ChannelList();
         int maxChan = this.image.getRamData(MemoryImage.RAM_ADRESS_MAX_CHAN);
-        for (int i= 0; i < maxChan; i++) {
+        for (int i= 0; i <= maxChan; i++) {
             int ramPos = i*2 + MemoryImage.RAM_AREA_ADRESS_FREQ;
             byte wordHi = this.image.getRamData(ramPos+1);
             byte wordLo = this.image.getRamData(ramPos);
@@ -242,7 +242,7 @@ public class DummyControler implements Controler{
             this.image.setRamData(ramPos, wordLo);
             this.image.setRamData(ramPos+1, wordHi);            
         }
-        this.image.setRamData(MemoryImage.RAM_ADRESS_MAX_CHAN, (byte)list.countChannel());
+        this.image.setRamData(MemoryImage.RAM_ADRESS_MAX_CHAN, (byte)(list.countChannel()-1));
     }
 
     @Override

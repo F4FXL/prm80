@@ -6,6 +6,7 @@
 package f4fez.prm80x0.Controler;
 
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -258,8 +259,50 @@ public abstract class PRMControler implements Controler{
     @Override
     public ChannelList getChannels() {
         ChannelList list = new ChannelList();
-        String str = this.sendCommand("c");
-        return list;
+        String result = null;
+        int chanMax = this.getMaxChan();
+        
+        for (int i= 0; i < RETRY && result == null; i++) {
+            int chanCount = 0;
+            list.clear();
+            if (i > 0)
+                this.sendEscapeCommand();
+            result = this.sendCommand("c");
+            
+            StringTokenizer tokenizer = new StringTokenizer(result, "\r\n");
+            if (!tokenizer.hasMoreTokens() || !tokenizer.nextToken().equals("Channels list :")) {
+                result = null;
+            }
+            else {
+                while (tokenizer.hasMoreTokens() && result != null) {
+                    String line = tokenizer.nextToken();
+                    if (chanCount <= chanMax) {
+                        if (line.matches("^[0-9]{2} : [0-9A-F]{4} [0-9A-F]{2}$")) {
+                            int chanNum = Integer.parseInt(line.substring(0, 2), 10);
+                            int freq = Integer.parseInt(line.substring(5, 9), 16);
+                            int state = Integer.parseInt(line.substring(10, 12), 16);
+                            if (chanNum == chanCount++) {
+                                Channel chan = new Channel(freq * this.getPLLStep(), state != 0);
+                                list.addChannel(chan);
+                            } else {
+                                result = null;
+                            }
+                        }
+                        else {
+                            result = null;
+                        }
+                    }
+                    else { // last line
+                        
+                    }
+                }
+            }
+
+        }
+        if (result != null)
+            return list;
+        else
+            return null;
     }
 
     @Override

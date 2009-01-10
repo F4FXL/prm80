@@ -42,5 +42,9 @@ public class ChannelList{
     public int countChannel() {
         return this.list.size();
     }
+    
+    public void clear() {
+        this.list.clear();
+    }
 
 }

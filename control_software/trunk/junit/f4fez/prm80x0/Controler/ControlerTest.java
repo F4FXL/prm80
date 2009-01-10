@@ -420,7 +420,7 @@ public abstract class ControlerTest {
         ChannelList result = instance.getChannels();
         if (result == null || result.countChannel() == 0)
             fail("No channels found");
-        int countChan = instance.getMaxChan();
+        int countChan = instance.getMaxChan()+1;
         if (result.countChannel() != countChan)
             fail("MaxChan different of counted channels");
     }

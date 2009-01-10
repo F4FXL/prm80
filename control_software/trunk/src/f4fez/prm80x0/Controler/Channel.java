@@ -33,8 +33,13 @@ public class Channel {
         this.id = -1;
         this.frequency = frequency;
         this.shift = shift;
-    }            
+    }
 
+    public Channel(int frequency, boolean shift) {
+        this.id = -1;
+        this.setFrequency(frequency);
+        this.shift = shift;
+    }
     /**
      * Get the value of id
      *
@@ -79,6 +84,13 @@ public class Channel {
             this.frequency = left+"."+right.toString();
         }
     }
+    
+    public void setFrequency(int frequency) {
+        int left = frequency / 1000000;
+        int right = frequency % 1000000;
+        this.setFrequency(left+"."+right);
+    }
+    
     protected boolean shift;
 
     /**
