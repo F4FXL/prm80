@@ -37,6 +37,8 @@ public abstract class PRMControler implements Controler{
     
     protected final static int RETRY = 5;
     
+    protected MemoryImage memoryImage = null;
+    
     public PRMControler() {
         this.serialListeners = new ArrayList();
     }
@@ -105,7 +107,7 @@ public abstract class PRMControler implements Controler{
     
     @Override
     public boolean isPllLocked() {
-        return true;
+        return (mode & 16) == 16;
     }
 
     @Override
@@ -167,11 +169,14 @@ public abstract class PRMControler implements Controler{
 
     @Override
     public synchronized void setPower(int power) {
-        int mode = Integer.parseInt(this.sendCommand("e").substring(0, 2), 16);
-        mode = mode ^ 2;
+        int model = Integer.parseInt(this.sendCommand("e").substring(0, 2), 16);
+        if (power == Controler.POWER_LO)
+            model = model | 2;
+        else
+            model = model & 253;
         this.send("d");
         this.waitChar(':', PRMControler.serialTimeout);
-        String sMode = Integer.toHexString(mode).toUpperCase();
+        String sMode = Integer.toHexString(model).toUpperCase();
         if (sMode.length() == 1)
             sMode = "0"+sMode;
         this.send(sMode);
@@ -253,7 +258,10 @@ public abstract class PRMControler implements Controler{
 
     @Override
     public MemoryImage getMemoryImage() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (this.memoryImage == null) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+        return this.memoryImage;
     }
 
     @Override
