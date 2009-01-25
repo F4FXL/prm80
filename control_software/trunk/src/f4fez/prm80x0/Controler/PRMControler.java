@@ -20,7 +20,7 @@ public abstract class PRMControler implements Controler{
     protected int majorFirmwareVersion;
     protected int minorFirmwareVersion;
     protected int prmType;
-    private int pllStep = 12500; 
+    private int pllStep; 
     protected ArrayList<SerialListener> serialListeners;
     protected Thread updateThread;
     protected int updateSleepTime;
@@ -34,11 +34,25 @@ public abstract class PRMControler implements Controler{
     protected int squelch;
     protected int volume;
     protected int mode;
+    protected int maxChan = -1;
     
+    protected final static int MAX_CHAN_ADRESS = 0x13;
+    protected final static int PLL_DIV_RAM_ADRESS = 0x16;
+    protected final static int PLL_REF_OSC = 10000000;
+    
+    /**
+     * Number of retry for each command
+     */
     protected final static int RETRY = 5;
     
+    /**
+     * Hold Memory dump
+     */
     protected MemoryImage memoryImage = null;
     
+    /**
+     * Default PRMControler constructor
+     */
     public PRMControler() {
         this.serialListeners = new ArrayList();
     }
@@ -56,11 +70,18 @@ public abstract class PRMControler implements Controler{
 
     @Override
     public void setPLLStep(int frequency) {
-        
+        int r = PLL_REF_OSC / (2 * frequency);
+        int data[] = new int[2];
+        data[1] = r & 255;
+        data[0] = (r & 1792) >> 3;
+        if (this.writeRamByte(PLL_DIV_RAM_ADRESS, data))
+            this.pllStep = frequency;        
     }
 
     @Override
     public int getPLLStep() {
+        if (this.pllStep == 0)
+            this.loadPllStep();
         return this.pllStep;
     }
 
@@ -87,9 +108,14 @@ public abstract class PRMControler implements Controler{
         return this.txFrreq;
     }
     
+    /**
+     * Load into the prm PLL values for TX and RX frequency
+     * @param rxFreq The RX frequency
+     * @param txFreq The TX frequency
+     */
     protected synchronized void setPLLFrequencies(int rxFreq, int txFreq) {
-        int rxfreq = (rxFreq + DummyControler.IF) / this.pllStep;
-        int txfreq = (txFreq) / this.pllStep;
+        int rxfreq = (rxFreq + DummyControler.IF) / this.getPLLStep();
+        int txfreq = (txFreq) / this.getPLLStep();
         this.send("r");
         this.waitChar(':', PRMControler.serialTimeout);
         String sFreq = Integer.toString(rxfreq, 16);
@@ -139,7 +165,11 @@ public abstract class PRMControler implements Controler{
 
     @Override
     public int getMaxChan() {
-        return 65;
+        if (this.maxChan == -1) {
+            int[] data = readRamByte(MAX_CHAN_ADRESS, 1);
+            this.maxChan = data[0];
+        }
+        return this.maxChan;
     }
 
     @Override
@@ -214,13 +244,34 @@ public abstract class PRMControler implements Controler{
         this.sendCommand("s");
     }    
     
+    /**
+     * Send a command to the prm and wait the answer and check if the answer is correct.
+     * The command is sent again until the answer is correct or the retry counter overflow
+     * @param command Command code
+     * @param regex Filter to check if the answer is correct
+     * @return Command answer
+     */
     protected String sendCommand (String command, String regex) {
         return this.sendCommand(command, PRMControler.serialTimeout, regex);
     }
     
+    /**
+     * Send a command to the prm and wait the answer
+     * @param command Command code
+     * @return Command answer
+     */
     protected String sendCommand (String command) {
         return this.sendCommand(command, PRMControler.serialTimeout);
     }
+    
+    /**
+     * Send a command to the prm and wait the answer and check if the answer is correct.
+     * The command is sent again until the answer is correct or the retry counter overflow
+     * @param command Command code
+     * @param waitDuration Time to wait for a response
+     * @param regex Filter to check if the answer is correct
+     * @return Command answer
+     */
     protected synchronized String sendCommand (String command, int waitDuration, String regex) {
         String result = null;
         for (int i= 0; i < RETRY && result == null; i++) {
@@ -233,25 +284,58 @@ public abstract class PRMControler implements Controler{
         return result;
             
     }
+    
+    /**
+     * Send a command to the prm and wait the answer
+     * @param command Command code
+     * @param waitDuration Time to wait for a response
+     * @return Command answer
+     */
     protected synchronized String sendCommand (String command, int waitDuration) {
         this.send(command);
         return waitCommandAnswer(waitDuration);
     }
     
+    /**
+     * Send data to the PRM
+     * @param data Data to send
+     */
     protected abstract void send(String data);
     
+    /**
+     * Wait for a command answer, a response end with the ">" character
+     * @param waitTime Time to wait for the answer
+     * @return Command answer
+     */
     protected synchronized String waitCommandAnswer(int waitTime) {
         return this.waitChar('>', waitTime);
     }
     
+    /**
+     * Wait for a specific character and return all character received before this character
+     * @param c Char to wait for
+     * @param waitTime Time to wait for the character
+     * @return Characters received
+     */
     protected abstract String waitChar(char c, int waitTime);
     
+    /**
+     * Add a lister called when a communication event appear
+     * @param list Listener to add
+     */
     public void addSerialListener(SerialListener list) {
         this.serialListeners.add(list);
     }
+    /**
+     * Remov a character previously added
+     * @param list Listener to remove
+     */
     public void removeSerialListener(SerialListener list) {
         this.serialListeners.remove(list);
     }
+    /**
+     * Remove all SerialListener
+     */
     public void removeSerialListeners() {
         this.serialListeners.clear();
     }
@@ -318,6 +402,9 @@ public abstract class PRMControler implements Controler{
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    /**
+     * Ask for current prm80 state value and load them into variables
+     */
     protected synchronized void updateState() {
         String stateLine = this.sendCommand("e", "^[0-9A-F]{20}\r\n>$");
         
@@ -325,9 +412,9 @@ public abstract class PRMControler implements Controler{
             try {
                 if (stateLine != null && stateLine.length() == 23 && !stateLine.equals(this.holdStateString)) {
                     int freq = Integer.parseInt(stateLine.substring(12, 16), 16);
-                    this.rxFreq = freq*this.pllStep-DummyControler.IF;
+                    this.rxFreq = freq*this.getPLLStep()-DummyControler.IF;
                     freq = Integer.parseInt(stateLine.substring(16, 20), 16);
-                    this.txFrreq = freq*this.pllStep;
+                    this.txFrreq = freq*this.getPLLStep();
                     this.volume =  (255-Integer.parseInt(stateLine.substring(8, 10), 16)) >> 4;
                     this.squelch = Integer.parseInt(stateLine.substring(6, 8), 16);
                     this.channel = Integer.parseInt(stateLine.substring(2, 4), 16);
@@ -341,6 +428,10 @@ public abstract class PRMControler implements Controler{
         }
     }
     
+    /**
+     * Launch an new thread to update prm80 values periodicaly
+     * @param sleepTime Time to wait between each update
+     */
     protected void runUpdateThread(int sleepTime) {
         this.updateSleepTime = sleepTime;
         this.updateThread = new Thread(new Runnable() {
@@ -370,8 +461,220 @@ public abstract class PRMControler implements Controler{
         return this.connected;
     }
     
+    /**
+     * Send an escape code to cancel the current command. 
+     * @return true on sucess (Prompt received)
+     */
     public boolean sendEscapeCommand() {
         this.send("!");
         return waitCommandAnswer(PRMControler.serialTimeout) != null;
+    }
+    
+    /**
+     * Read bytes from the PRM80 external RAM
+     * @param adress Start adress to read
+     * @param length Number of bytes to read
+     * @return Array of data read from the RAM
+     */
+    private synchronized int[] readRamByte(int adress, int length) {
+        int[] data = new int[length];
+        boolean ok = true;
+        
+        for (int retryLoop = 0; retryLoop < PRMControler.RETRY; retryLoop++) {
+            ok = true;
+            if (retryLoop > 0)
+                this.sendEscapeCommand();
+            this.send("m");
+            String commandResponse = this.waitChar('$', PRMControler.serialTimeout);
+            if (commandResponse == null) {
+                ok = false;
+                continue;
+            }                
+            if (!commandResponse.equals("External RAM adress $")) {
+                ok = false;
+                continue;
+            }
+            commandResponse = this.waitChar('$', PRMControler.serialTimeout);
+            if (commandResponse == null) {
+                ok = false;
+                continue;
+            }
+            if (!commandResponse.equals("XXXX : $")) {
+                ok = false;
+                continue;
+            }
+            String hexAdress = Integer.toHexString(adress);            
+            while (hexAdress.length() < 4)
+                hexAdress = "0".concat(hexAdress);
+            this.send(hexAdress);
+            commandResponse = this.waitChar('$', PRMControler.serialTimeout);
+            if (commandResponse == null) {
+                ok = false;
+                continue;
+            }
+            if (!commandResponse.equals(hexAdress+"\r\n$")) {
+                ok = false;
+                continue;
+            }
+            
+            // Values reading loop
+            for (int i= 0; i < length; i++) {
+                            
+                // First read adress
+                commandResponse = this.waitChar(' ', PRMControler.serialTimeout);
+                if (commandResponse == null) {
+                    ok = false;
+                    continue;
+                }
+                if (!commandResponse.equals(hexAdress+" ")) {
+                    ok = false;
+                    continue;
+                }
+                // Now read the value
+                commandResponse = this.waitChar(' ', PRMControler.serialTimeout);
+                if (commandResponse == null) {
+                    ok = false;
+                    continue;
+                }
+                if (!commandResponse.matches("^[0-9A-F]{2} $")) {
+                    ok = false;
+                    continue;
+                }
+
+                data[i] = Integer.parseInt(commandResponse.trim(), 16);
+
+                send("\r");
+                
+                commandResponse = this.waitChar('$', PRMControler.serialTimeout);
+                if (commandResponse == null) {
+                    ok = false;
+                    continue;
+                }
+                if (!commandResponse.equals("\r\n$")) {
+                    ok = false;
+                    continue;
+                }
+                
+                hexAdress = Integer.toHexString(adress + i + 1);            
+                while (hexAdress.length() < 4)
+                    hexAdress = "0".concat(hexAdress);
+            }
+            if (!ok)
+                continue;
+            else
+                break;
+        }
+        sendEscapeCommand();
+        
+        if (ok)
+            return data;
+        else
+            return null;
+    }
+    
+     /**
+     * Read bytes from the PRM80 external RAM
+     * @param adress Start adress to read
+     * @param length Number of bytes to read
+     * @return Array of data read from the RAM
+     */
+    private synchronized boolean writeRamByte(int adress, int[] data) {
+        boolean ok = true;
+        
+        for (int retryLoop = 0; retryLoop < PRMControler.RETRY; retryLoop++) {
+            ok = true;
+            if (retryLoop > 0)
+                this.sendEscapeCommand();
+            this.send("m");
+            String commandResponse = this.waitChar('$', PRMControler.serialTimeout);
+            if (commandResponse == null) {
+                ok = false;
+                continue;
+            }                
+            if (!commandResponse.equals("External RAM adress $")) {
+                ok = false;
+                continue;
+            }
+            commandResponse = this.waitChar('$', PRMControler.serialTimeout);
+            if (commandResponse == null) {
+                ok = false;
+                continue;
+            }
+            if (!commandResponse.equals("XXXX : $")) {
+                ok = false;
+                continue;
+            }
+            String hexAdress = Integer.toHexString(adress);            
+            while (hexAdress.length() < 4)
+                hexAdress = "0".concat(hexAdress);
+            this.send(hexAdress);
+            commandResponse = this.waitChar('$', PRMControler.serialTimeout);
+            if (commandResponse == null) {
+                ok = false;
+                continue;
+            }
+            if (!commandResponse.equals(hexAdress+"\r\n$")) {
+                ok = false;
+                continue;
+            }
+            
+            // Values reading loop
+            for (int i= 0; i < data.length; i++) {
+                            
+                // First read adress
+                commandResponse = this.waitChar(' ', PRMControler.serialTimeout);
+                if (commandResponse == null) {
+                    ok = false;
+                    continue;
+                }
+                if (!commandResponse.equals(hexAdress+" ")) {
+                    ok = false;
+                    continue;
+                }
+                // Read the previous value
+                commandResponse = this.waitChar(' ', PRMControler.serialTimeout);
+                if (commandResponse == null) {
+                    ok = false;
+                    continue;
+                }
+                if (!commandResponse.matches("^[0-9A-F]{2} $")) {
+                    ok = false;
+                    continue;
+                }
+                
+                // Send the new value
+                String value = Integer.toHexString( (data[i] )).toUpperCase();
+                if (value.length() == 1)
+                    value = "0" + value;
+                send(value);
+                
+                commandResponse = this.waitChar('$', PRMControler.serialTimeout);
+                if (commandResponse == null) {
+                    ok = false;
+                    continue;
+                }
+                if (!commandResponse.equals(value+"\r\n$")) {
+                    ok = false;
+                    continue;
+                }
+                
+                hexAdress = Integer.toHexString(adress + i + 1);            
+                while (hexAdress.length() < 4)
+                    hexAdress = "0".concat(hexAdress);
+            }
+            if (!ok)
+                continue;
+            else
+                break;
+        }
+        sendEscapeCommand();
+        
+        return ok;
+    }
+    
+    protected void loadPllStep() {
+        int[] pllStepBytes = this.readRamByte(PRMControler.PLL_DIV_RAM_ADRESS, 2);
+        int r = ((pllStepBytes[0] & 248) << 3) + pllStepBytes[1];
+        this.pllStep = PLL_REF_OSC / (r * 2);
     }
 }
