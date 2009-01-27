@@ -399,7 +399,8 @@ public abstract class PRMControler implements Controler{
 
     @Override
     public void setChannels(ChannelList list) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        for (int i=0; i < list.countChannel();i++)
+            this.setChannel(list.getChannel(i));
     }
 
     /**
@@ -672,9 +673,85 @@ public abstract class PRMControler implements Controler{
         return ok;
     }
     
+    /**
+     * Send commands to the PRM to get the pll frequency step
+     */
     protected void loadPllStep() {
         int[] pllStepBytes = this.readRamByte(PRMControler.PLL_DIV_RAM_ADRESS, 2);
         int r = ((pllStepBytes[0] & 248) << 3) + pllStepBytes[1];
         this.pllStep = PLL_REF_OSC / (r * 2);
+    }
+    
+    /**
+     * Program one channel in the PRM
+     * @param chan Channel to set up
+     * @return True if Ok
+     */
+    protected synchronized boolean setChannel(Channel chan) {
+        boolean ok = true;
+        for (int retryLoop = 0; retryLoop < PRMControler.RETRY; retryLoop++) {
+            ok = true;
+            if (retryLoop > 0)
+                this.sendEscapeCommand();
+            this.send("p");
+            String commandResponse = this.waitChar(':', serialTimeout);
+            if (commandResponse == null) {
+                ok = false;
+                continue;
+            }
+            if (!commandResponse.equals("Channel to set :")) {
+                ok = false;
+                continue;
+            }
+            String chanNumber = Integer.toString(chan.getId());
+            if (chanNumber.length() == 1)
+                chanNumber = "0" + chanNumber;
+            this.send(chanNumber);
+            commandResponse = this.waitChar('$', serialTimeout);
+            if (commandResponse == null) {
+                ok = false;
+                continue;
+            }
+            if (!commandResponse.equals(" "+chanNumber+"\r\nPLL value to load : $")) {
+                ok = false;
+                continue;
+            }
+            String freq = Integer.toHexString( (chan.getIntFrequency() / this.getPLLStep()) ).toUpperCase();
+            while (freq.length() < 4)
+                freq = "0" + freq;
+            send(freq);
+            commandResponse = this.waitChar('$', serialTimeout);
+            if (commandResponse == null) {
+                ok = false;
+                continue;
+            }
+            if (!commandResponse.equals(freq+"\r\nChannel state : $")) {
+                ok = false;
+                continue;
+            }
+            
+            int state = 0;
+            if (chan.isShift())
+                state += 1;
+            String stateStr = Integer.toString(state);
+            if (stateStr.length() == 1)
+                stateStr = "0" + stateStr;
+            send(stateStr);
+            commandResponse = this.waitChar('>', serialTimeout);
+            if (commandResponse == null) {
+                ok = false;
+                continue;
+            }
+            if (!commandResponse.equals(stateStr+"\r\n\r\n\r\n>")) {
+                ok = false;
+                continue;
+            }
+            
+            if (!ok)
+                continue;
+            else
+                break;
+        }
+        return ok;
     }
 }

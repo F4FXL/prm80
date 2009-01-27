@@ -68,6 +68,15 @@ public class Channel {
     public String getFrequency() {
         return frequency;
     }
+    
+    /**
+     * Get the frequency in Hertz
+     * @return The frequency
+     */
+    public int getIntFrequency() {
+        int freq = Integer.parseInt(this.frequency.replace(".", ""));
+        return freq;        
+    }
 
     /**
      * Set the value of frequency
