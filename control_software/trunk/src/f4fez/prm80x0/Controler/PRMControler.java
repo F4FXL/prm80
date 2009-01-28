@@ -171,6 +171,53 @@ public abstract class PRMControler implements Controler{
         }
         return this.maxChan;
     }
+    
+    /**
+     * Set number of programmed channels.
+     * @param chanCount Number of channel used
+     * @return True if ok
+     */
+    public synchronized boolean setMaxChan(int chanCount) {
+        boolean ok = true;
+        for (int retryLoop = 0; retryLoop < PRMControler.RETRY; retryLoop++) {
+            ok = true;
+            if (retryLoop > 0)
+                this.sendEscapeCommand();
+        
+            this.send("q");
+            String commandResponse = this.waitChar(':', PRMControler.serialTimeout);
+            if (commandResponse == null) {
+                ok = false;
+                continue;
+            }                
+            if (!commandResponse.equals("Channels number (00 to 99) :")) {
+                ok = false;
+                continue;
+            }
+            String chans = Integer.toString(chanCount);
+            if (chans.length() == 1)
+                chans = "0"+chans;
+            this.send(chans);
+            commandResponse = this.waitChar('>', PRMControler.serialTimeout);
+            if (commandResponse == null) {
+                ok = false;
+                continue;
+            }                
+            if (!commandResponse.equals(" "+chans+"\r\n\r\n>")) {
+                ok = false;
+                continue;
+            }
+            
+            if (!ok)
+                continue;
+            else
+                break;
+        }
+        
+        if (ok)
+            this.maxChan = chanCount;
+        return ok;
+    }
 
     @Override
     public int getCurrentChannel() {        
@@ -320,6 +367,15 @@ public abstract class PRMControler implements Controler{
     protected abstract String waitChar(char c, int waitTime);
     
     /**
+     * Wait for a specific character and return all character received before this character.
+     * This method accept multiple characters to wait for. Return when any of them is received
+     * @param chars List of characters to wait for
+     * @param waitTime Time to wait
+     * @return Characters received
+     */
+    protected abstract String waitChar(char[] chars, int waitTime);
+    
+    /**
      * Add a lister called when a communication event appear
      * @param list Listener to add
      */
@@ -401,6 +457,8 @@ public abstract class PRMControler implements Controler{
     public void setChannels(ChannelList list) {
         for (int i=0; i < list.countChannel();i++)
             this.setChannel(list.getChannel(i));
+        
+        this.setMaxChan(list.countChannel() - 1);
     }
 
     /**
@@ -737,14 +795,34 @@ public abstract class PRMControler implements Controler{
             if (stateStr.length() == 1)
                 stateStr = "0" + stateStr;
             send(stateStr);
-            commandResponse = this.waitChar('>', serialTimeout);
+            char[] chars = {'>', '?'};
+            commandResponse = this.waitChar(chars, serialTimeout);
             if (commandResponse == null) {
                 ok = false;
                 continue;
             }
+            boolean sendConfirm = false;
             if (!commandResponse.equals(stateStr+"\r\n\r\n\r\n>")) {
-                ok = false;
-                continue;
+                if (!commandResponse.equals(stateStr+"\r\nThis channel number doesn't exist. Add new channel (Y/N) ?")) {
+                    ok = false;
+                    continue;
+                }
+                else {
+                    sendConfirm = true;
+                }
+            }
+            
+            if (sendConfirm) {
+                send("Y");
+                commandResponse = this.waitChar('>', serialTimeout);
+                if (commandResponse == null) {
+                    ok = false;
+                    continue;
+                }
+                if (!commandResponse.equals(" \r\n\r\n\r\n>")) {
+                    ok = false;
+                    continue;
+                }
             }
             
             if (!ok)

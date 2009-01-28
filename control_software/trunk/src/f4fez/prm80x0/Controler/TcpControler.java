@@ -148,5 +148,36 @@ public class TcpControler extends PRMControler{
                 return null;
         }
     }
+    
+    @Override
+    protected synchronized String waitChar(char[] chars, int waitTime) {
+        StringBuffer rx = new StringBuffer();
+        try {
+            this.socket.setSoTimeout(waitTime);
+            byte[] b = new byte[1];
+            boolean found = false;
+            do {                
+                b[0] = (byte) this.serialIn.read();
+                if (b[0] == -1) {
+                    return null;
+                }
+                String s = new String(b);
+                rx.append(s);
+                Iterator<SerialListener> i = this.serialListeners.iterator();
+                while (i.hasNext()) {
+                    i.next().dataReceived(s);
+                }
+                for (int j = 0; (j < chars.length) && !found ; j++)
+                    found = b[0] == chars[j];
+            } while (!found);
+            
+            return rx.toString();
+        } catch (SocketTimeoutException ex) {
+                return null;
+        } catch (IOException ex) {
+                Logger.getLogger(TcpControler.class.getName()).log(Level.SEVERE, null, ex);
+                return null;
+        }
+    }
 
 }

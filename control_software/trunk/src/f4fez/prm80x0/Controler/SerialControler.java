@@ -143,4 +143,40 @@ public class SerialControler extends PRMControler{
         return rx.toString();
     }
 
+    @Override
+    protected String waitChar(char[] chars, int waitTime) {
+        StringBuffer rx = new StringBuffer();
+        try {
+            if (waitTime > 0) {
+                this.serialPort.enableReceiveTimeout(waitTime);
+            } else {
+                this.serialPort.disableReceiveTimeout();
+            }
+            try {
+                byte[] b = new byte[1];
+                boolean found = false;
+                do {
+                    b[0] = (byte) this.serialIn.read();
+                    if (b[0] == -1) {
+                        return null;
+                    }
+                    String s = new String(b);
+                    rx.append(s);
+                    Iterator<SerialListener> i = this.serialListeners.iterator();
+                    while (i.hasNext()) {
+                        i.next().dataReceived(s);
+                    }
+                    for (int j = 0; (j < chars.length) && !found ; j++)
+                    found = b[0] != chars[j];
+                } while (!found);
+            } catch (IOException ex) {
+                Logger.getLogger(SerialControler.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return rx.toString();
+        } catch (UnsupportedCommOperationException ex) {
+            Logger.getLogger(SerialControler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return rx.toString();
+    }
+
 }
