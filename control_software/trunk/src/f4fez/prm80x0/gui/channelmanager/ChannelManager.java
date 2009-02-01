@@ -22,6 +22,10 @@ package f4fez.prm80x0.gui.channelmanager;
 import f4fez.prm80x0.Controler.Channel;
 import f4fez.prm80x0.Controler.ChannelList;
 import f4fez.prm80x0.gui.channelmanager.ChannelModel;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -54,6 +58,14 @@ public class ChannelManager extends javax.swing.JDialog {
         cancelButton = new javax.swing.JButton();
         tableScroll = new javax.swing.JScrollPane();
         table = new javax.swing.JTable();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        fileMenu = new javax.swing.JMenu();
+        importCSVMenuItem = new javax.swing.JMenuItem();
+        exportCSVMenuItem = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JSeparator();
+        saveCloseMenuItem = new javax.swing.JMenuItem();
+        closeMenuItem = new javax.swing.JMenuItem();
+        editMenu = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(f4fez.prm80x0.PRM80X0App.class).getContext().getResourceMap(ChannelManager.class);
@@ -96,6 +108,59 @@ public class ChannelManager extends javax.swing.JDialog {
 
         getContentPane().add(tableScroll, java.awt.BorderLayout.CENTER);
 
+        jMenuBar1.setName("jMenuBar1"); // NOI18N
+
+        fileMenu.setText(resourceMap.getString("fileMenu.text")); // NOI18N
+        fileMenu.setName("fileMenu"); // NOI18N
+
+        importCSVMenuItem.setText(resourceMap.getString("importCSVMenuItem.text")); // NOI18N
+        importCSVMenuItem.setName("importCSVMenuItem"); // NOI18N
+        importCSVMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                importCSVMenuItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(importCSVMenuItem);
+
+        exportCSVMenuItem.setText(resourceMap.getString("exportCSVMenuItem.text")); // NOI18N
+        exportCSVMenuItem.setName("exportCSVMenuItem"); // NOI18N
+        exportCSVMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exportCSVMenuItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(exportCSVMenuItem);
+
+        jSeparator1.setName("jSeparator1"); // NOI18N
+        fileMenu.add(jSeparator1);
+
+        saveCloseMenuItem.setText(resourceMap.getString("saveCloseMenuItem.text")); // NOI18N
+        saveCloseMenuItem.setName("saveCloseMenuItem"); // NOI18N
+        saveCloseMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveCloseMenuItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(saveCloseMenuItem);
+
+        closeMenuItem.setText(resourceMap.getString("closeMenuItem.text")); // NOI18N
+        closeMenuItem.setName("closeMenuItem"); // NOI18N
+        closeMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                closeMenuItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(closeMenuItem);
+
+        jMenuBar1.add(fileMenu);
+
+        editMenu.setText(resourceMap.getString("editMenu.text")); // NOI18N
+        editMenu.setEnabled(false);
+        editMenu.setName("editMenu"); // NOI18N
+        jMenuBar1.add(editMenu);
+
+        setJMenuBar(jMenuBar1);
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -107,6 +172,46 @@ public class ChannelManager extends javax.swing.JDialog {
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
         this.setVisible(false);
     }//GEN-LAST:event_saveButtonActionPerformed
+
+private void closeMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeMenuItemActionPerformed
+    this.channels = null;
+    this.setVisible(false);
+}//GEN-LAST:event_closeMenuItemActionPerformed
+
+private void saveCloseMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveCloseMenuItemActionPerformed
+    this.setVisible(false);
+}//GEN-LAST:event_saveCloseMenuItemActionPerformed
+
+private void exportCSVMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportCSVMenuItemActionPerformed
+    JFileChooser fc = new JFileChooser();
+    int value = fc.showSaveDialog(this);
+    if (value == JFileChooser.APPROVE_OPTION)  {
+        String file = fc.getSelectedFile().getAbsolutePath();
+        if (!file.endsWith(".csv"))
+            file = file.concat(".csv");
+            try {
+                this.channels.exportCSV(file);
+            } catch (Exception ex) {
+                Logger.getLogger(ChannelManager.class.getName()).log(Level.INFO, null, ex);
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Export error", JOptionPane.ERROR_MESSAGE);
+            }
+    }
+}//GEN-LAST:event_exportCSVMenuItemActionPerformed
+
+private void importCSVMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importCSVMenuItemActionPerformed
+    JFileChooser fc = new JFileChooser();
+    int value = fc.showOpenDialog(this);
+    if (value == JFileChooser.APPROVE_OPTION)  {
+        String file = fc.getSelectedFile().getAbsolutePath();
+            try {
+                this.channels.importCSV(file);
+            } catch (Exception ex) {
+                Logger.getLogger(ChannelManager.class.getName()).log(Level.INFO, null, ex);
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Export error", JOptionPane.ERROR_MESSAGE);
+            }
+        this.repaint();
+    }
+}//GEN-LAST:event_importCSVMenuItemActionPerformed
     
     public void tableTableChanged(TableModelEvent e) {
         int row = e.getFirstRow();
@@ -136,7 +241,15 @@ public class ChannelManager extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel buttonsBar;
     private javax.swing.JButton cancelButton;
+    private javax.swing.JMenuItem closeMenuItem;
+    private javax.swing.JMenu editMenu;
+    private javax.swing.JMenuItem exportCSVMenuItem;
+    private javax.swing.JMenu fileMenu;
+    private javax.swing.JMenuItem importCSVMenuItem;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JButton saveButton;
+    private javax.swing.JMenuItem saveCloseMenuItem;
     private javax.swing.JTable table;
     private javax.swing.JScrollPane tableScroll;
     // End of variables declaration//GEN-END:variables

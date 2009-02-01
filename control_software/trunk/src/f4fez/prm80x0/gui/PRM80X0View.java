@@ -52,7 +52,7 @@ import f4fez.prm80x0.gui.serialterminal.TerminalDialog;
 public class PRM80X0View extends FrameView {
 
     private VirtualDeviceFirmware vdf;
-    private Configuration config;
+    private Option config;
     private TerminalDialog serialSpy;
             
     public PRM80X0View(SingleFrameApplication app) {
@@ -65,7 +65,7 @@ public class PRM80X0View extends FrameView {
             this.getFrame().setMinimumSize(new Dimension(500,350));
             this.getFrame().setMaximumSize(new Dimension(500,350));
             
-            this.config = new Configuration();
+            this.config = new Option();
             
             // Disable all controls
             this.setEnableControls(false);
@@ -226,7 +226,6 @@ public class PRM80X0View extends FrameView {
         javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
         ToolsMenu = new javax.swing.JMenu();
         channelManagerMenuItem = new javax.swing.JMenuItem();
-        configurationMenuItem = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JSeparator();
         resetMenuItem = new javax.swing.JMenuItem();
         razMenuItem = new javax.swing.JMenuItem();
@@ -239,6 +238,7 @@ public class PRM80X0View extends FrameView {
         serialSpyMenuItem = new javax.swing.JMenuItem();
         expertSeparator = new javax.swing.JSeparator();
         expertMenuItem = new javax.swing.JCheckBoxMenuItem();
+        configurationMenuItem = new javax.swing.JMenuItem();
         javax.swing.JMenu helpMenu = new javax.swing.JMenu();
         javax.swing.JMenuItem aboutMenuItem = new javax.swing.JMenuItem();
         statusPanel = new javax.swing.JPanel();
@@ -338,8 +338,11 @@ public class PRM80X0View extends FrameView {
 
         squelchLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         squelchLabel.setText(resourceMap.getString("squelchLabel.text")); // NOI18N
+        squelchLabel.setMaximumSize(new java.awt.Dimension(61, 17));
+        squelchLabel.setMinimumSize(new java.awt.Dimension(61, 17));
         squelchLabel.setName("squelchLabel"); // NOI18N
-        jPanel2.add(squelchLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(85, 10, 50, -1));
+        squelchLabel.setPreferredSize(new java.awt.Dimension(61, 17));
+        jPanel2.add(squelchLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(85, 10, 60, -1));
 
         squelchSpinner.setName("squelchSpinner"); // NOI18N
         squelchSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -347,7 +350,7 @@ public class PRM80X0View extends FrameView {
                 squelchSpinnerStateChanged(evt);
             }
         });
-        jPanel2.add(squelchSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(85, 30, 50, 20));
+        jPanel2.add(squelchSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(85, 30, 60, 20));
 
         upButton.setText(resourceMap.getString("upButton.text")); // NOI18N
         upButton.setName("upButton"); // NOI18N
@@ -446,15 +449,6 @@ public class PRM80X0View extends FrameView {
         });
         ToolsMenu.add(channelManagerMenuItem);
 
-        configurationMenuItem.setText(resourceMap.getString("configurationMenuItem.text")); // NOI18N
-        configurationMenuItem.setName("configurationMenuItem"); // NOI18N
-        configurationMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                configurationMenuItemActionPerformed(evt);
-            }
-        });
-        ToolsMenu.add(configurationMenuItem);
-
         jSeparator1.setName("jSeparator1"); // NOI18N
         ToolsMenu.add(jSeparator1);
 
@@ -514,6 +508,15 @@ public class PRM80X0View extends FrameView {
             }
         });
         ToolsMenu.add(expertMenuItem);
+
+        configurationMenuItem.setText(resourceMap.getString("configurationMenuItem.text")); // NOI18N
+        configurationMenuItem.setName("configurationMenuItem"); // NOI18N
+        configurationMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                configurationMenuItemActionPerformed(evt);
+            }
+        });
+        ToolsMenu.add(configurationMenuItem);
 
         menuBar.add(ToolsMenu);
 
@@ -822,7 +825,7 @@ private void connectTcpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
         this.lpLabel.setVisible(!this.vdf.isHighPower());
     }
     
-    public Configuration getConfiguration() {
+    public Option getConfiguration() {
         return this.config;
     }
     

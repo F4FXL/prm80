@@ -41,14 +41,17 @@ public class ChannelModel extends AbstractTableModel {
 
     }
 
+    @Override
     public int getRowCount() {
         return channels.countChannel()+1;
     }
 
+    @Override
     public int getColumnCount() {
         return 4;
     }
 
+    @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         Channel editedChannel;
         if (rowIndex == this.channels.countChannel())
@@ -117,7 +120,10 @@ public class ChannelModel extends AbstractTableModel {
                 editedChannel.setFrequency((String) value);
                 break;
             case 2:
-                editedChannel.setShift((Boolean) value);
+                String shift = "";
+                if ( (Boolean) value )
+                    shift = "-";
+                editedChannel.setShift(shift);
                 break;                
             case 3:
                 editedChannel.setComments((String) value);

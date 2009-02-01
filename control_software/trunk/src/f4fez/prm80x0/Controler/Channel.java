@@ -29,16 +29,18 @@ public class Channel {
         this.id = -1;
     }
     
-    public Channel(String frequency, boolean shift) {
+    public Channel(String frequency, String shift) {
         this.id = -1;
         this.frequency = frequency;
         this.shift = shift;
+        this.comments = "";
     }
 
-    public Channel(int frequency, boolean shift) {
+    public Channel(int frequency, String shift) {
         this.id = -1;
         this.setFrequency(frequency);
         this.shift = shift;
+        this.comments = "";
     }
     /**
      * Get the value of id
@@ -100,15 +102,23 @@ public class Channel {
         this.setFrequency(left+"."+right);
     }
     
-    protected boolean shift;
+    protected String shift ="";
 
     /**
      * Get the value of shift
      *
      * @return the value of shift
      */
+    public String getShift() {
+        return this.shift;
+    }
+    
+    /**
+     * Is shift activated or not
+     * @return I s shift activated
+     */
     public boolean isShift() {
-        return shift;
+        return !shift.equals("");
     }
 
     /**
@@ -116,7 +126,7 @@ public class Channel {
      *
      * @param shift new value of shift
      */
-    public void setShift(boolean shift) {
+    public void setShift(String shift) {
         this.shift = shift;
     }
     private String comments;

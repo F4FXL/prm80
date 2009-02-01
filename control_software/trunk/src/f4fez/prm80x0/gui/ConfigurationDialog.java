@@ -29,7 +29,7 @@ import java.util.Enumeration;
  */
 public class ConfigurationDialog extends javax.swing.JDialog {
     
-    private Configuration config;
+    private Option config;
     
     /** Creates new form ConfigurationDialog */
     public ConfigurationDialog(java.awt.Frame parent, boolean modal) {
@@ -38,7 +38,7 @@ public class ConfigurationDialog extends javax.swing.JDialog {
         fillComboBoxWithSerialPorts();
         this.portList.setSelectedIndex(0);
         
-        config = new Configuration();
+        config = new Option();
         this.config.setSerialPort(this.portList.getItemAt(0).toString());
     }
     
@@ -124,10 +124,10 @@ public class ConfigurationDialog extends javax.swing.JDialog {
     }
     
     /**
-     * Initialise controls from a Configuration object
+     * Initialise controls from a Option object
      * @param config Value to loads
      */
-    public void setConfiguration(Configuration config) {
+    public void setConfiguration(Option config) {
         this.config = config;
         this.okButton.setEnabled(true);   
         this.portList.setSelectedItem(config.getSerialPort());
@@ -137,7 +137,7 @@ public class ConfigurationDialog extends javax.swing.JDialog {
      * Obtain the current configuration parameters.
      * @return configuration
      */
-    public Configuration getConfiguration() {
+    public Option getConfiguration() {
         return this.config;
     }
     

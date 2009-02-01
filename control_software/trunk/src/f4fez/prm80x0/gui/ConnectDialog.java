@@ -6,7 +6,7 @@
 
 package f4fez.prm80x0.gui;
 
-import f4fez.prm80x0.Configuration;
+import f4fez.prm80x0.Option;
 
 /**
  *
@@ -107,5 +107,5 @@ private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     private javax.swing.JTextField serverField;
     // End of variables declaration//GEN-END:variables
     private String serverAdress;
-    private Configuration config;
+    private Option config;
 }

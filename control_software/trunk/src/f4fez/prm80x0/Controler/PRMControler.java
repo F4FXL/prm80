@@ -430,7 +430,10 @@ public abstract class PRMControler implements Controler{
                             int freq = Integer.parseInt(line.substring(5, 9), 16);
                             int state = Integer.parseInt(line.substring(10, 12), 16);
                             if (chanNum == chanCount++) {
-                                Channel chan = new Channel(freq * this.getPLLStep(), state != 0);
+                                String shift = "";
+                                if (state != 0)
+                                    shift="-";
+                                Channel chan = new Channel(freq * this.getPLLStep(), shift);
                                 list.addChannel(chan);
                             } else {
                                 result = null;

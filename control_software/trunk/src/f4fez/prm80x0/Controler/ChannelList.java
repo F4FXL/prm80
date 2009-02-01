@@ -17,7 +17,17 @@
 
 package f4fez.prm80x0.Controler;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -46,5 +56,85 @@ public class ChannelList{
     public void clear() {
         this.list.clear();
     }
+    
+    public void exportCSV(String fileName) throws Exception {
+        PrintWriter out = null;
+        try {
+            File file = new File(fileName);
+            if (file.exists()) {
+                file.delete();
+            }
+            out = new PrintWriter(file);
+            out.println( "Chan Id;Frequency;Shift;Comments");
+            for (int i = 0; i < this.list.size(); i++) {
+                Channel chan = this.list.get(i);
+                out.println(    Integer.toString(chan.getId()) 
+                                + ";"  + chan.getFrequency()
+                                + ";" + chan.getShift()
+                                + ";" + chan.getComments()
+                                );
+            }
 
+            out.flush();
+            out.close();
+        } catch (FileNotFoundException ex) {
+            throw new Exception("File not found");
+        } finally {
+            out.close();
+        }
+    }
+    
+    public void importCSV(String fileName) throws Exception {
+        this.list.clear();
+        File file = new File(fileName);
+        FileReader fr = new FileReader(file);
+        BufferedReader in = new BufferedReader(fr);
+        String line;
+        int lineCount = 0;
+        ArrayList<Channel> newList = new ArrayList();
+        while((line = in.readLine()) != null) {
+            try {
+                Object[] elements = lineTokenizer(line);
+                if ((elements.length < 3) || (elements.length > 4))
+                    throw new Exception("Invalid parameters count");
+                int id = Integer.parseInt( (String)elements[0]);
+                if (id != lineCount)
+                    throw new Exception("Invalid sequence number. Value read : "+Integer.toString(id)+" instead of "+Integer.toString(lineCount));
+                String frequency =  ((String) elements[1]).trim();
+                String shift =  ((String)elements[2]).trim();
+                if (!shift.matches("^[\\+-]?$"))
+                    throw new Exception("Invalid shift value for chanel Id : "+Integer.toString(id));
+                String comments = "";
+                if (elements.length > 3)
+                    comments =  ((String)elements[3]).trim();
+                Channel chan = new Channel(frequency, shift);
+                chan.setId(id);
+                chan.setComments(comments);
+                newList.add(chan);
+                lineCount++;
+            } catch (NumberFormatException e) {
+                if (lineCount > 0)
+                    throw new Exception("Invalid file format. Channel Id "+Integer.toString(lineCount)+" : Invalid number");
+            }            
+        }
+        
+        in.close();
+        fr.close();
+        this.list = newList;
+    }
+    
+    private static Object[] lineTokenizer(String line) {
+        ArrayList<String> list = new ArrayList<String>();
+        int firstPos = 0;
+        int lastPos = 0;
+        while ( firstPos < line.length()) {
+            lastPos = line.indexOf(';', firstPos);
+            if (lastPos == -1)
+                lastPos = line.length();
+            String token = line.substring(firstPos,lastPos);
+            list.add(token);
+            firstPos = lastPos+1;
+        }
+        return list.toArray();
+    }
 }

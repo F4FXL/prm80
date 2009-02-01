@@ -25,7 +25,7 @@ import java.util.prefs.Preferences;
  *
  * @author fmazen
  */
-public class Configuration {
+public class Option {
     private String serialPort;
     private boolean expertMode;
     private Preferences prefs;
@@ -35,7 +35,7 @@ public class Configuration {
     private final static String prefSerialPort = "serialPort";
     private final static String prefExpertMode = "expertMode";
     private final static String prefLastURI = "lastServerURI";   
-    public Configuration() {
+    public Option() {
         this.prefs = Preferences.userRoot().node(prefRoot);
         Enumeration thePorts = CommPortIdentifier.getPortIdentifiers();
         while (thePorts.hasMoreElements()) {
@@ -45,8 +45,8 @@ public class Configuration {
                 break;
             }
         }
-        this.expertMode = this.prefs.getBoolean(Configuration.prefExpertMode, false);
-        this.lastServerURI = this.prefs.get(Configuration.prefLastURI, "prm80://127.0.0.1");
+        this.expertMode = this.prefs.getBoolean(Option.prefExpertMode, false);
+        this.lastServerURI = this.prefs.get(Option.prefLastURI, "prm80://127.0.0.1");
     }            
     
     public void setSerialPort(String port) {
@@ -63,12 +63,12 @@ public class Configuration {
     }
     
     public void setEpertMode(boolean expert) {
-        this.prefs.putBoolean(Configuration.prefExpertMode, expert);
+        this.prefs.putBoolean(Option.prefExpertMode, expert);
     }
     
     public void setLastServerURI(String uri) {
         if (!this.lastServerURI.equals(uri)) {
-            this.prefs.put(Configuration.prefLastURI, uri);        
+            this.prefs.put(Option.prefLastURI, uri);        
             this.lastServerURI = uri;
         }
     }

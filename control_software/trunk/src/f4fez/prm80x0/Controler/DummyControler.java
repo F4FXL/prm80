@@ -226,7 +226,7 @@ public class DummyControler implements Controler{
             int pllWord = ((wordHi & 0xFF) << 8) + (wordLo & 0xFF);
             String freq = Integer.toString(pllWord * this.getPLLStep());
             freq = freq.substring(0, freq.length()-6) + "." + freq.substring(freq.length()-6);
-            list.addChannel(new Channel(freq, false));
+            list.addChannel(new Channel(freq, ""));
         }
         return list;
     }
