@@ -44,6 +44,7 @@ import f4fez.prm80x0.Controler.PRMStateChangeListener;
 import f4fez.prm80x0.Controler.SerialControler;
 import f4fez.prm80x0.Controler.TcpControler;
 import f4fez.prm80x0.gui.serialterminal.TerminalDialog;
+import javax.swing.JFileChooser;
 
 
 /**
@@ -190,6 +191,7 @@ public class PRM80X0View extends FrameView {
         this.serialSpyMenuItem.setVisible(enable);
         this.expertSeparator.setVisible(enable);
         this.connectTcpMenuItem.setVisible(enable);
+        this.exportA51MenuItem.setVisible(enable);
     }
 
     /** This method is called from within the constructor to
@@ -236,6 +238,7 @@ public class PRM80X0View extends FrameView {
         ram2eepromMenuItem = new javax.swing.JMenuItem();
         eeprom2ramMenuItem = new javax.swing.JMenuItem();
         serialSpyMenuItem = new javax.swing.JMenuItem();
+        exportA51MenuItem = new javax.swing.JMenuItem();
         expertSeparator = new javax.swing.JSeparator();
         expertMenuItem = new javax.swing.JCheckBoxMenuItem();
         configurationMenuItem = new javax.swing.JMenuItem();
@@ -497,6 +500,15 @@ public class PRM80X0View extends FrameView {
         });
         ToolsMenu.add(serialSpyMenuItem);
 
+        exportA51MenuItem.setText(resourceMap.getString("exportA51MenuItem.text")); // NOI18N
+        exportA51MenuItem.setName("exportA51MenuItem"); // NOI18N
+        exportA51MenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exportA51MenuItemActionPerformed(evt);
+            }
+        });
+        ToolsMenu.add(exportA51MenuItem);
+
         expertSeparator.setName("expertSeparator"); // NOI18N
         ToolsMenu.add(expertSeparator);
 
@@ -755,7 +767,6 @@ public class PRM80X0View extends FrameView {
     }//GEN-LAST:event_powerButtonActionPerformed
 
 private void connectTcpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectTcpMenuItemActionPerformed
-    JFrame mainFrame = PRM80X0App.getApplication().getMainFrame();
     ConnectDialog cd = new ConnectDialog(this, true);
     //cd.setLocationRelativeTo(mainFrame);
     cd.setVisible(true);
@@ -800,6 +811,18 @@ private void connectTcpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
         }
     }
 }//GEN-LAST:event_connectTcpMenuItemActionPerformed
+
+private void exportA51MenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportA51MenuItemActionPerformed
+    JFileChooser fc = new JFileChooser();
+    int value = fc.showSaveDialog(this.getFrame());
+    if (value == JFileChooser.APPROVE_OPTION)  {
+            try {
+                A51Export.exportA51(this.vdf.getPRMControler(), fc.getSelectedFile());
+            } catch (Exception ex) {
+                Logger.getLogger(PRM80X0View.class.getName()).log(Level.INFO, null, ex);
+            }
+    }
+}//GEN-LAST:event_exportA51MenuItemActionPerformed
     private void disconnect() {
         try {
             this.disconnectMenuItem.setEnabled(false);
@@ -843,6 +866,7 @@ private void connectTcpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
     private javax.swing.JMenuItem eepromMenuItem;
     private javax.swing.JCheckBoxMenuItem expertMenuItem;
     private javax.swing.JSeparator expertSeparator;
+    private javax.swing.JMenuItem exportA51MenuItem;
     private javax.swing.JLabel freqLabel;
     private javax.swing.JLabel hpLabel;
     private javax.swing.JPanel jPanel1;

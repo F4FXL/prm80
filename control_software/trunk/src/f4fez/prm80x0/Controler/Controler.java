@@ -44,6 +44,8 @@ public interface Controler {
     public static int POWER_HI = 1;
     
     public static int STATE_NORMAL = 0;
+    
+    public static int IF = 21400000;
    
     /**
      * Initialise the communication with de PRM
