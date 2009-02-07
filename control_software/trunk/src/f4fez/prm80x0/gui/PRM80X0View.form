@@ -441,15 +441,6 @@
                 <Property name="name" type="java.lang.String" value="expertSeparator" noResource="true"/>
               </Properties>
             </MenuItem>
-            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="expertMenuItem">
-              <Properties>
-                <Property name="text" type="java.lang.String" resourceKey="expertMenuItem.text"/>
-                <Property name="name" type="java.lang.String" value="expertMenuItem" noResource="true"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="expertMenuItemActionPerformed"/>
-              </Events>
-            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="configurationMenuItem">
               <Properties>
                 <Property name="text" type="java.lang.String" resourceKey="configurationMenuItem.text"/>

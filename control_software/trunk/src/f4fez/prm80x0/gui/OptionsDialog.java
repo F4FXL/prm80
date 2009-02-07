@@ -1,5 +1,5 @@
 /*
- * ConfigurationDialog.java
+ * OptionsDialog.java
  *   Copyright (c) 2007, 2008 Florian MAZEN
  *   
  *   This program is free software: you can redistribute it and/or modify
@@ -27,12 +27,12 @@ import java.util.Enumeration;
  *
  * @author  fmazen
  */
-public class ConfigurationDialog extends javax.swing.JDialog {
+public class OptionsDialog extends javax.swing.JDialog {
     
     private Option config;
     
-    /** Creates new form ConfigurationDialog */
-    public ConfigurationDialog(java.awt.Frame parent, boolean modal) {
+    /** Creates new form OptionsDialog */
+    public OptionsDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         fillComboBoxWithSerialPorts();
@@ -55,19 +55,20 @@ public class ConfigurationDialog extends javax.swing.JDialog {
         portList = new javax.swing.JComboBox();
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
+        expertCheckBox = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(f4fez.prm80x0.PRM80X0App.class).getContext().getResourceMap(ConfigurationDialog.class);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(f4fez.prm80x0.PRM80X0App.class).getContext().getResourceMap(OptionsDialog.class);
         setTitle(resourceMap.getString("Form.title")); // NOI18N
         setMinimumSize(new java.awt.Dimension(260, 60));
         setName("Form"); // NOI18N
         setResizable(false);
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.LINE_AXIS));
 
-        mainPanel.setMinimumSize(new java.awt.Dimension(270, 100));
+        mainPanel.setMinimumSize(new java.awt.Dimension(270, 140));
         mainPanel.setName("mainPanel"); // NOI18N
         mainPanel.setOpaque(false);
-        mainPanel.setPreferredSize(new java.awt.Dimension(270, 100));
+        mainPanel.setPreferredSize(new java.awt.Dimension(270, 140));
         mainPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         portListLabel.setText(resourceMap.getString("portListLabel.text")); // NOI18N
@@ -86,7 +87,7 @@ public class ConfigurationDialog extends javax.swing.JDialog {
                 okButtonActionPerformed(evt);
             }
         });
-        mainPanel.add(okButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 60, -1, -1));
+        mainPanel.add(okButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 100, -1, -1));
 
         cancelButton.setText(resourceMap.getString("cancelButton.text")); // NOI18N
         cancelButton.setName("cancelButton"); // NOI18N
@@ -95,7 +96,11 @@ public class ConfigurationDialog extends javax.swing.JDialog {
                 cancelButtonActionPerformed(evt);
             }
         });
-        mainPanel.add(cancelButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 60, -1, -1));
+        mainPanel.add(cancelButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 100, -1, -1));
+
+        expertCheckBox.setText(resourceMap.getString("expertCheckBox.text")); // NOI18N
+        expertCheckBox.setName("expertCheckBox"); // NOI18N
+        mainPanel.add(expertCheckBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, -1, -1));
 
         getContentPane().add(mainPanel);
 
@@ -108,6 +113,7 @@ public class ConfigurationDialog extends javax.swing.JDialog {
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
         this.config.setSerialPort(this.portList.getSelectedItem().toString());
+        this.config.setEpertMode(this.expertCheckBox.isSelected());
         this.setVisible(false);
 }//GEN-LAST:event_okButtonActionPerformed
     
@@ -131,6 +137,7 @@ public class ConfigurationDialog extends javax.swing.JDialog {
         this.config = config;
         this.okButton.setEnabled(true);   
         this.portList.setSelectedItem(config.getSerialPort());
+        this.expertCheckBox.setSelected(this.config.isExpertMode());
     }
     
     /**
@@ -145,6 +152,7 @@ public class ConfigurationDialog extends javax.swing.JDialog {
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
+    private javax.swing.JCheckBox expertCheckBox;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JButton okButton;
     private javax.swing.JComboBox portList;

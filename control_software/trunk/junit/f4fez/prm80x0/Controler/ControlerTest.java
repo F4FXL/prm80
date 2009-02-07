@@ -434,8 +434,8 @@ public abstract class ControlerTest {
         instance.connectPRM(port);
         ChannelList oldList = instance.getChannels();
         ChannelList list = new ChannelList();
-        list.addChannel(new Channel("144000000", false));
-        list.addChannel(new Channel("145000000", false));
+        list.addChannel(new Channel("144000000", ""));
+        list.addChannel(new Channel("145000000", ""));
         instance.setChannels(list);
         ChannelList newList = instance.getChannels();
         if (newList.countChannel() != 2)

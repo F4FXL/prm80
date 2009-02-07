@@ -36,6 +36,7 @@ public class ChannelModel extends AbstractTableModel {
     private Channel newChannel;
 
     public ChannelModel(ChannelList channels) {
+        super();
         this.channels = channels;
         this.newChannel = new Channel();
 
@@ -68,7 +69,7 @@ public class ChannelModel extends AbstractTableModel {
             case 1:
                 return editedChannel.getFrequency();
             case 2:
-                return editedChannel.isShift();
+                return editedChannel.getShift();
             case 3:
                 return editedChannel.getComments();
             default:
@@ -94,9 +95,9 @@ public class ChannelModel extends AbstractTableModel {
 
     @Override
     public Class getColumnClass(int c) {
-        if (c==2)
+        /*if (c==2)
             return Boolean.class;
-        else
+        else*/
             return String.class;
     }
 
@@ -120,10 +121,11 @@ public class ChannelModel extends AbstractTableModel {
                 editedChannel.setFrequency((String) value);
                 break;
             case 2:
-                String shift = "";
+                /*String shift = "";
                 if ( (Boolean) value )
                     shift = "-";
-                editedChannel.setShift(shift);
+                editedChannel.setShift(shift);*/
+                editedChannel.setShift((String) value);
                 break;                
             case 3:
                 editedChannel.setComments((String) value);

@@ -24,6 +24,8 @@ import f4fez.prm80x0.Controler.ChannelList;
 import f4fez.prm80x0.gui.channelmanager.ChannelModel;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultCellEditor;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.event.TableModelEvent;
@@ -104,6 +106,7 @@ public class ChannelManager extends javax.swing.JDialog {
                 tableTableChanged(e);
             }            
         });
+        table.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(getShiftCombo()));
         tableScroll.setViewportView(table);
 
         getContentPane().add(tableScroll, java.awt.BorderLayout.CENTER);
@@ -237,6 +240,14 @@ private void importCSVMenuItemActionPerformed(java.awt.event.ActionEvent evt) {/
     
     public ChannelList getChannelList() {
         return this.channels;
+    }
+    
+    private JComboBox getShiftCombo() {
+        JComboBox combo = new JComboBox();
+        combo.addItem("");
+        combo.addItem("-");
+        combo.addItem("+");
+        return combo;
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel buttonsBar;

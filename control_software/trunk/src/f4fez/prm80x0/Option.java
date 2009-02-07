@@ -64,6 +64,7 @@ public class Option {
     
     public void setEpertMode(boolean expert) {
         this.prefs.putBoolean(Option.prefExpertMode, expert);
+        this.expertMode = expert;
     }
     
     public void setLastServerURI(String uri) {

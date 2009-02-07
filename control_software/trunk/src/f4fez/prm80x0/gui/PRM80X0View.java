@@ -72,7 +72,6 @@ public class PRM80X0View extends FrameView {
             this.setEnableControls(false);
             
             // Expert mode ?
-            this.expertMenuItem.setSelected(this.config.isExpertMode());
             this.setVisibleExpertControls(this.config.isExpertMode());
 
             // status bar initialization - message timeout, idle icon and busy animation, etc
@@ -181,6 +180,7 @@ public class PRM80X0View extends FrameView {
             this.lpLabel.setVisible(false);
         }
         this.powerButton.setEnabled(enable);
+        this.exportA51MenuItem.setEnabled(enable);
     }
     
     private void setVisibleExpertControls(boolean enable) {
@@ -240,7 +240,6 @@ public class PRM80X0View extends FrameView {
         serialSpyMenuItem = new javax.swing.JMenuItem();
         exportA51MenuItem = new javax.swing.JMenuItem();
         expertSeparator = new javax.swing.JSeparator();
-        expertMenuItem = new javax.swing.JCheckBoxMenuItem();
         configurationMenuItem = new javax.swing.JMenuItem();
         javax.swing.JMenu helpMenu = new javax.swing.JMenu();
         javax.swing.JMenuItem aboutMenuItem = new javax.swing.JMenuItem();
@@ -512,15 +511,6 @@ public class PRM80X0View extends FrameView {
         expertSeparator.setName("expertSeparator"); // NOI18N
         ToolsMenu.add(expertSeparator);
 
-        expertMenuItem.setText(resourceMap.getString("expertMenuItem.text")); // NOI18N
-        expertMenuItem.setName("expertMenuItem"); // NOI18N
-        expertMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                expertMenuItemActionPerformed(evt);
-            }
-        });
-        ToolsMenu.add(expertMenuItem);
-
         configurationMenuItem.setText(resourceMap.getString("configurationMenuItem.text")); // NOI18N
         configurationMenuItem.setName("configurationMenuItem"); // NOI18N
         configurationMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -711,16 +701,12 @@ public class PRM80X0View extends FrameView {
 
     private void configurationMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configurationMenuItemActionPerformed
         JFrame mainFrame = PRM80X0App.getApplication().getMainFrame();
-            ConfigurationDialog cd = new ConfigurationDialog(mainFrame, true);
+            OptionsDialog cd = new OptionsDialog(mainFrame, true);
             cd.setLocationRelativeTo(mainFrame);
             cd.setConfiguration(this.config);           
             cd.setVisible(true);
+            this.setVisibleExpertControls(this.config.isExpertMode());
     }//GEN-LAST:event_configurationMenuItemActionPerformed
-
-    private void expertMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_expertMenuItemActionPerformed
-        this.config.setEpertMode(this.expertMenuItem.isSelected());
-        this.setVisibleExpertControls(this.expertMenuItem.isSelected());
-    }//GEN-LAST:event_expertMenuItemActionPerformed
 
     private void connectVirtualMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectVirtualMenuItemActionPerformed
         try {
@@ -768,7 +754,7 @@ public class PRM80X0View extends FrameView {
 
 private void connectTcpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectTcpMenuItemActionPerformed
     ConnectDialog cd = new ConnectDialog(this, true);
-    //cd.setLocationRelativeTo(mainFrame);
+    cd.setLocationRelativeTo(this.getFrame());
     cd.setVisible(true);
     if (cd.getServerAdress() != null) {        
         try {
@@ -864,7 +850,6 @@ private void exportA51MenuItemActionPerformed(java.awt.event.ActionEvent evt) {/
     private javax.swing.JButton downButton;
     private javax.swing.JMenuItem eeprom2ramMenuItem;
     private javax.swing.JMenuItem eepromMenuItem;
-    private javax.swing.JCheckBoxMenuItem expertMenuItem;
     private javax.swing.JSeparator expertSeparator;
     private javax.swing.JMenuItem exportA51MenuItem;
     private javax.swing.JLabel freqLabel;
