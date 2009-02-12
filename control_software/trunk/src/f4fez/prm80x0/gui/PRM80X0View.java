@@ -457,6 +457,11 @@ public class PRM80X0View extends FrameView {
         resetMenuItem.setText(resourceMap.getString("resetMenuItem.text")); // NOI18N
         resetMenuItem.setEnabled(false);
         resetMenuItem.setName("resetMenuItem"); // NOI18N
+        resetMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetMenuItemActionPerformed(evt);
+            }
+        });
         ToolsMenu.add(resetMenuItem);
 
         razMenuItem.setText(resourceMap.getString("razMenuItem.text")); // NOI18N
@@ -695,7 +700,17 @@ public class PRM80X0View extends FrameView {
             cm.setLocationRelativeTo(mainFrame);
             cm.setVisible(true);
             if (cm.isChannelListValid()) {
+            try {
                 this.vdf.getPRMControler().setChannels(cm.getChannelList());
+                this.vdf.reset();
+                this.vdf.setCurrentChannel(0);
+                updateValues();
+            } catch (CommunicationException ex) {
+                this.disconnectMenuItem.setEnabled(false);
+                this.connectMenuItem.setEnabled(true);
+                JOptionPane.showMessageDialog(this.getComponent(), "Erreur de connexion : "+ex.getMessage(), "Erreur de connexion", JOptionPane.ERROR_MESSAGE);
+                Logger.getLogger(PRM80X0View.class.getName()).log(Level.WARNING, null, ex);
+            }
             }
     }//GEN-LAST:event_channelManagerMenuItemActionPerformed
 
@@ -809,6 +824,18 @@ private void exportA51MenuItemActionPerformed(java.awt.event.ActionEvent evt) {/
             }
     }
 }//GEN-LAST:event_exportA51MenuItemActionPerformed
+
+private void resetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetMenuItemActionPerformed
+        try {
+            this.vdf.reset();//GEN-LAST:event_resetMenuItemActionPerformed
+            updateValues();
+        } catch (CommunicationException ex) {
+            this.disconnectMenuItem.setEnabled(false);
+            this.connectMenuItem.setEnabled(true);
+            JOptionPane.showMessageDialog(this.getComponent(), "Erreur de connexion : "+ex.getMessage(), "Erreur de connexion", JOptionPane.ERROR_MESSAGE);
+            Logger.getLogger(PRM80X0View.class.getName()).log(Level.WARNING, null, ex);
+        }
+}
     private void disconnect() {
         try {
             this.disconnectMenuItem.setEnabled(false);

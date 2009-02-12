@@ -31,9 +31,17 @@ public class Channel {
     
     public Channel(String frequency, String shift) {
         this.id = -1;
-        this.frequency = frequency;
         this.shift = shift;
         this.comments = "";
+        
+        int sepPos = frequency.indexOf('.');
+        if (sepPos > 0) {
+            String left = frequency.substring(0, sepPos);
+            StringBuffer right = new StringBuffer(frequency.substring(sepPos+1));
+            while (right.length() < 6)
+                right.append('0');
+            this.frequency = left+"."+right.toString();
+        }
     }
 
     public Channel(int frequency, String shift) {

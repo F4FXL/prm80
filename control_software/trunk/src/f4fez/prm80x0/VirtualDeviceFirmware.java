@@ -45,7 +45,7 @@ public class VirtualDeviceFirmware {
         }
         else {
             memChan++;
-            if (memChan >= this.controler.getMaxChan())
+            if (memChan > this.controler.getMaxChan())
                 memChan = 0;
             this.controler.setCurrentChannel(memChan);
         }
@@ -59,7 +59,7 @@ public class VirtualDeviceFirmware {
         else {
             memChan--;
             if (memChan < 0)
-               memChan = this.controler.getMaxChan()-1;
+               memChan = this.controler.getMaxChan();
             this.controler.setCurrentChannel(memChan);
         }
     }
@@ -124,5 +124,14 @@ public class VirtualDeviceFirmware {
     
     public void disconnect() throws CommunicationException {
         this.controler.disconnectPRM();
+    }
+    
+    public void reset() throws CommunicationException {
+        this.controler.resetPRM();
+    }
+    
+    public void setCurrentChannel(int chan) throws CommunicationException {
+        this.vfoMode = false;
+        this.controler.setCurrentChannel(chan);
     }
 }

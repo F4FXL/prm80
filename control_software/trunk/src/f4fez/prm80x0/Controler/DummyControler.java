@@ -33,7 +33,7 @@ public class DummyControler implements Controler{
     private boolean connected;
     
     private int volume = 5;
-    
+    protected PRMStateChangeListener changeListener;
    
     private int power;
     
@@ -46,6 +46,7 @@ public class DummyControler implements Controler{
     @Override
     public int connectPRM(String port) {        
         image = new MemoryImage();
+        init();
         this.resetPRM();        
         this.connected = true;
         return DummyControler.PRM8060;        
@@ -98,7 +99,7 @@ public class DummyControler implements Controler{
         assert channel > this.image.getEepromData(MemoryImage.RAM_ADRESS_MAX_CHAN);
         this.image.setRamData(MemoryImage.RAM_ADRESS_CHAN, (byte) channel);
         
-        int eepromPos = channel*2 + MemoryImage.RAM_AREA_ADRESS_FREQ;
+        int eepromPos = channel*2 + MemoryImage.RAM_AREA_ADRESS_FREQ * 256;
         
         byte wordHi = this.image.getRamData(eepromPos+1);
         byte wordLo = this.image.getRamData(eepromPos);
@@ -128,15 +129,7 @@ public class DummyControler implements Controler{
     }
 
     @Override
-    public void resetPRM() {
-        ArrayList<Integer> freq = new ArrayList<Integer>();
-        freq.add(144100000);
-        freq.add(145600000);
-        freq.add(145800000);
-        this.loadVirtualEEprom(freq);
-        
-        this.reloadRAM();
-        
+    public void resetPRM() {                
         this.setCurrentChannel(this.image.getRamData(MemoryImage.RAM_ADRESS_CHAN));
     }
 
@@ -183,7 +176,7 @@ public class DummyControler implements Controler{
     
     private void loadVirtualEEprom(ArrayList<Integer> array) {
         for(int i= 0; i < array.size(); i++) {
-            int eepromPos = i*2 + MemoryImage.RAM_AREA_ADRESS_FREQ;
+            int eepromPos = i*2 + MemoryImage.RAM_AREA_ADRESS_FREQ*256;
             int pllWord = array.get(i) / 12500;
             byte wordHi = (byte) (pllWord / 256);
             byte wordLo = (byte) (pllWord - (wordHi * 256) );
@@ -219,7 +212,7 @@ public class DummyControler implements Controler{
         ChannelList list = new ChannelList();
         int maxChan = this.image.getRamData(MemoryImage.RAM_ADRESS_MAX_CHAN);
         for (int i= 0; i <= maxChan; i++) {
-            int ramPos = i*2 + MemoryImage.RAM_AREA_ADRESS_FREQ;
+            int ramPos = i*2 + MemoryImage.RAM_AREA_ADRESS_FREQ*256;
             byte wordHi = this.image.getRamData(ramPos+1);
             byte wordLo = this.image.getRamData(ramPos);
             int pllWord = ((wordHi & 0xFF) << 8) + (wordLo & 0xFF);
@@ -233,9 +226,8 @@ public class DummyControler implements Controler{
     @Override
     public void setChannels(ChannelList list) {
         for (int i= 0; i < list.countChannel(); i++) {
-            int ramPos = i*2 + MemoryImage.RAM_AREA_ADRESS_FREQ;
-            String freq = list.getChannel(i).getFrequency().replace(".", "");
-            int pllWord = Integer.parseInt(freq)  / 12500;
+            int ramPos = i*2 + MemoryImage.RAM_AREA_ADRESS_FREQ*256;
+            int pllWord = list.getChannel(i).getIntFrequency()  / this.getPLLStep();
             byte wordHi = (byte) (pllWord / 256);
             byte wordLo = (byte) (pllWord - (wordHi * 256) );
             this.image.setRamData(ramPos, wordLo);
@@ -246,7 +238,7 @@ public class DummyControler implements Controler{
 
     @Override
     public void setPRMStateChangeListener(PRMStateChangeListener listener) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.changeListener = listener;
     }
 
     @Override
@@ -254,5 +246,15 @@ public class DummyControler implements Controler{
         return this.connected;
     }
 
+    private void init() {
+        ArrayList<Integer> freq = new ArrayList<Integer>();
+        freq.add(144100000);
+        freq.add(145600000);
+        freq.add(145800000);
+        this.image.setRamData(MemoryImage.RAM_ADRESS_CHAN, (byte) 0);
+        this.loadVirtualEEprom(freq);
+        
+        this.reloadRAM();
+    }
 
 }
