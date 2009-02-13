@@ -218,7 +218,18 @@ public class DummyControler implements Controler{
             int pllWord = ((wordHi & 0xFF) << 8) + (wordLo & 0xFF);
             String freq = Integer.toString(pllWord * this.getPLLStep());
             freq = freq.substring(0, freq.length()-6) + "." + freq.substring(freq.length()-6);
-            list.addChannel(new Channel(freq, ""));
+            int statePos = i + MemoryImage.RAM_AREA_ADRESS_STATE*256;
+            byte state = this.image.getRamData(statePos);
+            String shift = "";
+            if ((state & 1) == 1) {
+                if ((state & 4) == 4) {
+                    shift = "+";
+                }
+                else {
+                    shift = "-";
+                }
+            }
+            list.addChannel(new Channel(freq, shift));
         }
         return list;
     }
@@ -231,7 +242,15 @@ public class DummyControler implements Controler{
             byte wordHi = (byte) (pllWord / 256);
             byte wordLo = (byte) (pllWord - (wordHi * 256) );
             this.image.setRamData(ramPos, wordLo);
-            this.image.setRamData(ramPos+1, wordHi);            
+            this.image.setRamData(ramPos+1, wordHi);     
+            int statePos = i + MemoryImage.RAM_AREA_ADRESS_STATE*256;
+            byte state = 0;
+            if (list.getChannel(i).isShift()) {
+                state += 1;
+                if ("+".equals(list.getChannel(i).getShift()))
+                    state += 4;
+            }
+            this.image.setRamData(statePos,state);
         }
         this.image.setRamData(MemoryImage.RAM_ADRESS_MAX_CHAN, (byte)(list.countChannel()-1));
     }
