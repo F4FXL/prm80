@@ -30,22 +30,23 @@ public interface Controler {
     /**
      * PRM 8060 identification code
      */
-    public static int PRM8060 = 1;
+    public final static int PRM8060 = 1;
     /**
      * PRM 8070 identification code
      */
-    public static int PRM8070 = 2;
+    public final static int PRM8070 = 2;
     
-    public static int LOCK_NONE = 0;
-    public static int LOCK_KEYS = 1;
-    public static int LOCK_TX = 2;
+    public final static int LOCK_NONE = 0;
+    public final static int LOCK_KEYS = 1;
+    public final static int LOCK_TX = 2;
     
-    public static int POWER_LO = 0;
-    public static int POWER_HI = 1;
+    public final static int POWER_LO = 0;
+    public final static int POWER_HI = 1;
     
-    public static int STATE_NORMAL = 0;
+    public final static int STATE_NORMAL = 0;
     
-    public static int IF = 21400000;
+    public final static int IF = 21400000;
+    public final static int PLL_REF_OSC = 10000000;
    
     /**
      * Initialise the communication with de PRM
@@ -219,4 +220,15 @@ public interface Controler {
      * @return
      */
     public boolean isConnected();
+    
+    /**
+     * Get the PRM80 shift
+     * @return TX shift frequency in Hertz
+     */
+    public int getTxFrequencyShift();
+    /**
+     * Set the default frequency shift
+     * @param frequency TX Frequency in Hertz
+     */
+    public void setTxFrequencyShift(int frequency);
 }

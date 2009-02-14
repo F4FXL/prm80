@@ -276,4 +276,14 @@ public class DummyControler implements Controler{
         this.reloadRAM();
     }
 
+    @Override
+    public int getTxFrequencyShift() {
+        return 600000;
+    }
+
+    @Override
+    public void setTxFrequencyShift(int frequency) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 }

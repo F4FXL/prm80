@@ -29,17 +29,24 @@ public class A51Export {
             if (chanCount.length() == 1)
                 chanCount = "0"+chanCount;
             out = new PrintWriter(file);
-            out.println("CONFIG_CHAN_COUNT       EQU    0"+chanCount+"h");            
-            out.println("CONFIG_SHIFT_LO         EQU    030h");
-            out.println("CONFIG_SHIFT_HI         EQU    030h");
+            out.println("CONFIG_CHAN_COUNT        EQU    0"+chanCount+"h");            
             
-            String pllStep = Integer.toString(controler.getPLLStep());
-            while(pllStep.length() < 4)
-                    pllStep = "0" + pllStep;
-            out.println("CONFIG_PLL_DIV_LO       EQU    0"+pllStep.substring(0, 2)+"h");
-            out.println("CONFIG_PLL_DIV_HI       EQU    0"+pllStep.substring(2, 4)+"h");
+            String shift = Integer.toHexString(controler.getTxFrequencyShift()/ controler.getPLLStep());
+            while(shift.length() < 4)
+                    shift = "0" + shift;
+            out.println("CONFIG_SHIFT_LO          EQU    0"+shift.substring(2, 4)+"h");
+            out.println("CONFIG_SHIFT_HI          EQU    0"+shift.substring(0, 2)+"h");
+            
+            int r = Controler.PLL_REF_OSC / (2 * controler.getPLLStep());
+            String rLo = Integer.toHexString(r & 255);
+            if (rLo.length() == 1)
+                    rLo = "0" + rLo;
+            String rHi = Integer.toHexString((r & 1792) >> 3);
+            out.println("CONFIG_PLL_DIV_LO        EQU    0"+rLo+"h");
+            out.println("CONFIG_PLL_DIV_HI        EQU    0"+rHi+"h");
+            
             if (controler.getMajorFirmwareVersion() > 3)
-                out.println("CONFIG_SCAN_DURATION    EQU    008h");
+                out.println("CONFIG_SCAN_DURATION     EQU    008h");
             out.println();
             out.println("freq_list:");
             
@@ -58,8 +65,11 @@ public class A51Export {
             for (int i = 0; i < channels.countChannel(); i++) {
                 Channel chan = channels.getChannel(i);
                 int state = 0;
-                if (chan.isShift())
+                if (chan.isShift()) {
                     state = state + 1;
+                    if ("+".equals(chan.getShift()))
+                        state = state + 4;
+                }
                 String sState = Integer.toString(state);
                 if (sState.length() == 1)
                     sState = "0"+sState;

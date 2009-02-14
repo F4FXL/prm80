@@ -38,7 +38,6 @@ public abstract class PRMControler implements Controler{
     
     protected final static int MAX_CHAN_ADRESS = 0x13;
     protected final static int PLL_DIV_RAM_ADRESS = 0x16;
-    protected final static int PLL_REF_OSC = 10000000;
     
     /**
      * Number of retry for each command
@@ -834,5 +833,15 @@ public abstract class PRMControler implements Controler{
                 break;
         }
         return ok;
+    }
+    
+    @Override
+    public int getTxFrequencyShift() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void setTxFrequencyShift(int frequency) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
