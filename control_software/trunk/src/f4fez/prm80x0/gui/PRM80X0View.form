@@ -360,6 +360,16 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="channelManagerMenuItemActionPerformed"/>
               </Events>
             </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="configurationMenuItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="configurationMenuItem.text"/>
+                <Property name="enabled" type="boolean" value="false"/>
+                <Property name="name" type="java.lang.String" value="configurationMenuItem" noResource="true"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="configurationMenuItemActionPerformed"/>
+              </Events>
+            </MenuItem>
             <MenuItem class="javax.swing.JSeparator" name="jSeparator1">
               <Properties>
                 <Property name="name" type="java.lang.String" value="jSeparator1" noResource="true"/>
@@ -444,13 +454,13 @@
                 <Property name="name" type="java.lang.String" value="expertSeparator" noResource="true"/>
               </Properties>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="configurationMenuItem">
+            <MenuItem class="javax.swing.JMenuItem" name="optionMenuItem">
               <Properties>
-                <Property name="text" type="java.lang.String" resourceKey="configurationMenuItem.text"/>
-                <Property name="name" type="java.lang.String" value="configurationMenuItem" noResource="true"/>
+                <Property name="text" type="java.lang.String" resourceKey="optionMenuItem.text"/>
+                <Property name="name" type="java.lang.String" value="optionMenuItem" noResource="true"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="configurationMenuItemActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="optionMenuItemActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>

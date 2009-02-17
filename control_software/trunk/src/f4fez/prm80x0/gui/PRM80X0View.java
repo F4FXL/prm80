@@ -181,6 +181,7 @@ public class PRM80X0View extends FrameView {
         }
         this.powerButton.setEnabled(enable);
         this.exportA51MenuItem.setEnabled(enable);
+        this.configurationMenuItem.setEnabled(enable);
     }
     
     private void setVisibleExpertControls(boolean enable) {
@@ -188,6 +189,9 @@ public class PRM80X0View extends FrameView {
         this.resetMenuItem.setVisible(enable);
         this.razMenuItem.setVisible(enable);
         this.memoryMenu.setVisible(enable);
+        this.ramExtMenuItem.setVisible(false);
+        this.ramIntMenuItem.setVisible(false);
+        this.eepromMenuItem.setVisible(false);
         this.serialSpyMenuItem.setVisible(enable);
         this.expertSeparator.setVisible(enable);
         this.connectTcpMenuItem.setVisible(enable);
@@ -228,6 +232,7 @@ public class PRM80X0View extends FrameView {
         javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
         ToolsMenu = new javax.swing.JMenu();
         channelManagerMenuItem = new javax.swing.JMenuItem();
+        configurationMenuItem = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JSeparator();
         resetMenuItem = new javax.swing.JMenuItem();
         razMenuItem = new javax.swing.JMenuItem();
@@ -240,7 +245,7 @@ public class PRM80X0View extends FrameView {
         serialSpyMenuItem = new javax.swing.JMenuItem();
         exportA51MenuItem = new javax.swing.JMenuItem();
         expertSeparator = new javax.swing.JSeparator();
-        configurationMenuItem = new javax.swing.JMenuItem();
+        optionMenuItem = new javax.swing.JMenuItem();
         javax.swing.JMenu helpMenu = new javax.swing.JMenu();
         javax.swing.JMenuItem aboutMenuItem = new javax.swing.JMenuItem();
         statusPanel = new javax.swing.JPanel();
@@ -451,6 +456,16 @@ public class PRM80X0View extends FrameView {
         });
         ToolsMenu.add(channelManagerMenuItem);
 
+        configurationMenuItem.setText(resourceMap.getString("configurationMenuItem.text")); // NOI18N
+        configurationMenuItem.setEnabled(false);
+        configurationMenuItem.setName("configurationMenuItem"); // NOI18N
+        configurationMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                configurationMenuItemActionPerformed(evt);
+            }
+        });
+        ToolsMenu.add(configurationMenuItem);
+
         jSeparator1.setName("jSeparator1"); // NOI18N
         ToolsMenu.add(jSeparator1);
 
@@ -516,14 +531,14 @@ public class PRM80X0View extends FrameView {
         expertSeparator.setName("expertSeparator"); // NOI18N
         ToolsMenu.add(expertSeparator);
 
-        configurationMenuItem.setText(resourceMap.getString("configurationMenuItem.text")); // NOI18N
-        configurationMenuItem.setName("configurationMenuItem"); // NOI18N
-        configurationMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        optionMenuItem.setText(resourceMap.getString("optionMenuItem.text")); // NOI18N
+        optionMenuItem.setName("optionMenuItem"); // NOI18N
+        optionMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                configurationMenuItemActionPerformed(evt);
+                optionMenuItemActionPerformed(evt);
             }
         });
-        ToolsMenu.add(configurationMenuItem);
+        ToolsMenu.add(optionMenuItem);
 
         menuBar.add(ToolsMenu);
 
@@ -714,14 +729,14 @@ public class PRM80X0View extends FrameView {
             }
     }//GEN-LAST:event_channelManagerMenuItemActionPerformed
 
-    private void configurationMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configurationMenuItemActionPerformed
+    private void optionMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optionMenuItemActionPerformed
         JFrame mainFrame = PRM80X0App.getApplication().getMainFrame();
-            OptionsDialog cd = new OptionsDialog(mainFrame, true);
-            cd.setLocationRelativeTo(mainFrame);
-            cd.setConfiguration(this.config);           
-            cd.setVisible(true);
-            this.setVisibleExpertControls(this.config.isExpertMode());
-    }//GEN-LAST:event_configurationMenuItemActionPerformed
+        OptionsDialog cd = new OptionsDialog(mainFrame, true);
+        cd.setLocationRelativeTo(mainFrame);
+        cd.setConfiguration(this.config);           
+        cd.setVisible(true);
+        this.setVisibleExpertControls(this.config.isExpertMode());
+}//GEN-LAST:event_optionMenuItemActionPerformed
 
     private void connectVirtualMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectVirtualMenuItemActionPerformed
         try {
@@ -827,7 +842,7 @@ private void exportA51MenuItemActionPerformed(java.awt.event.ActionEvent evt) {/
 
 private void resetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetMenuItemActionPerformed
         try {
-            this.vdf.reset();//GEN-LAST:event_resetMenuItemActionPerformed
+            this.vdf.reset();
             updateValues();
         } catch (CommunicationException ex) {
             this.disconnectMenuItem.setEnabled(false);
@@ -835,7 +850,14 @@ private void resetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
             JOptionPane.showMessageDialog(this.getComponent(), "Erreur de connexion : "+ex.getMessage(), "Erreur de connexion", JOptionPane.ERROR_MESSAGE);
             Logger.getLogger(PRM80X0View.class.getName()).log(Level.WARNING, null, ex);
         }
-}
+}//GEN-LAST:event_resetMenuItemActionPerformed
+
+private void configurationMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configurationMenuItemActionPerformed
+    JFrame mainFrame = PRM80X0App.getApplication().getMainFrame();
+        ConfigurationDialog cd = new ConfigurationDialog(mainFrame, true);
+        cd.setLocationRelativeTo(mainFrame);
+        cd.setVisible(true);
+}//GEN-LAST:event_configurationMenuItemActionPerformed
     private void disconnect() {
         try {
             this.disconnectMenuItem.setEnabled(false);
@@ -890,6 +912,7 @@ private void resetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
     private javax.swing.JMenu memoryMenu;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.ButtonGroup modeButtonGroup;
+    private javax.swing.JMenuItem optionMenuItem;
     private javax.swing.JButton powerButton;
     private javax.swing.JProgressBar progressBar;
     private javax.swing.JMenuItem ram2eepromMenuItem;
