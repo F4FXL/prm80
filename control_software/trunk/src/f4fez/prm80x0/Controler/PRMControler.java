@@ -35,10 +35,7 @@ public abstract class PRMControler implements Controler{
     protected int volume;
     protected int mode;
     protected int maxChan = -1;
-    
-    protected final static int MAX_CHAN_ADRESS = 0x13;
-    protected final static int PLL_DIV_RAM_ADRESS = 0x16;
-    
+        
     /**
      * Number of retry for each command
      */
@@ -73,7 +70,12 @@ public abstract class PRMControler implements Controler{
         int data[] = new int[2];
         data[1] = r & 255;
         data[0] = (r & 1792) >> 3;
-        if (this.writeRamByte(PLL_DIV_RAM_ADRESS, data))
+        int ramPos;
+        if (this.getMajorFirmwareVersion() == 3)
+            ramPos = MemoryImageV3.RAM_ADRESS_PLL_DIV_HI;
+        else
+            ramPos = MemoryImageV4.RAM_ADRESS_PLL_DIV_HI;
+        if (this.writeRamByte(ramPos, data))
             this.pllStep = frequency;        
     }
 
@@ -165,7 +167,7 @@ public abstract class PRMControler implements Controler{
     @Override
     public int getMaxChan() {
         if (this.maxChan == -1) {
-            int[] data = readRamByte(MAX_CHAN_ADRESS, 1);
+            int[] data = readRamByte(MemoryImageV3.RAM_ADRESS_MAX_CHAN, 1);
             this.maxChan = data[0];
         }
         return this.maxChan;
@@ -473,7 +475,7 @@ public abstract class PRMControler implements Controler{
             try {
                 if (stateLine != null && stateLine.length() == 23 && !stateLine.equals(this.holdStateString)) {
                     int freq = Integer.parseInt(stateLine.substring(12, 16), 16);
-                    this.rxFreq = freq*this.getPLLStep()-DummyControler.IF;
+                    this.rxFreq = freq*this.getPLLStep()-Controler.IF;
                     freq = Integer.parseInt(stateLine.substring(16, 20), 16);
                     this.txFrreq = freq*this.getPLLStep();
                     this.volume =  (255-Integer.parseInt(stateLine.substring(8, 10), 16)) >> 4;
@@ -737,7 +739,12 @@ public abstract class PRMControler implements Controler{
      * Send commands to the PRM to get the pll frequency step
      */
     protected void loadPllStep() {
-        int[] pllStepBytes = this.readRamByte(PRMControler.PLL_DIV_RAM_ADRESS, 2);
+        int ramPos;
+        if (this.getMajorFirmwareVersion() == 3)
+            ramPos = MemoryImageV3.RAM_ADRESS_PLL_DIV_HI;
+        else
+            ramPos = MemoryImageV4.RAM_ADRESS_PLL_DIV_HI;
+        int[] pllStepBytes = this.readRamByte(ramPos, 2);
         int r = ((pllStepBytes[0] & 248) << 3) + pllStepBytes[1];
         this.pllStep = PLL_REF_OSC / (r * 2);
     }
@@ -843,5 +850,19 @@ public abstract class PRMControler implements Controler{
     @Override
     public void setTxFrequencyShift(int frequency) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+        @Override
+    public int getScanSpeed() throws CommunicationException {
+        return 10;
+    }
+
+    @Override
+    public void setScanSpeed(int speed) throws CommunicationException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public int getPRMType() throws CommunicationException {
+        return this.prmType;
     }
 }

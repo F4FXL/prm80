@@ -82,7 +82,7 @@ public class TcpControler extends PRMControler{
                 this.socket.close();
                 throw new SerialPortException("Server identification error");
             }
-            String ident = this.sendCommand("v", "^PRM80[67]0 V[3-9].[0-9] 144\r\n>$");
+            String ident = this.sendCommand("v", "^PRM80[67]0 V[3-9].[0-9]( 144)?( 430)?\r\n>$");
             if (ident == null) {
                 this.disconnectPRM();
                 throw new SerialPortException("PRM80 not detected");                

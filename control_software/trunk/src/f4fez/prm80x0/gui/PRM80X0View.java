@@ -482,6 +482,11 @@ public class PRM80X0View extends FrameView {
         razMenuItem.setText(resourceMap.getString("razMenuItem.text")); // NOI18N
         razMenuItem.setEnabled(false);
         razMenuItem.setName("razMenuItem"); // NOI18N
+        razMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                razMenuItemActionPerformed(evt);
+            }
+        });
         ToolsMenu.add(razMenuItem);
 
         memoryMenu.setText(resourceMap.getString("memoryMenu.text")); // NOI18N
@@ -502,10 +507,20 @@ public class PRM80X0View extends FrameView {
 
         ram2eepromMenuItem.setText(resourceMap.getString("ram2eepromMenuItem.text")); // NOI18N
         ram2eepromMenuItem.setName("ram2eepromMenuItem"); // NOI18N
+        ram2eepromMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ram2eepromMenuItemActionPerformed(evt);
+            }
+        });
         memoryMenu.add(ram2eepromMenuItem);
 
         eeprom2ramMenuItem.setText(resourceMap.getString("eeprom2ramMenuItem.text")); // NOI18N
         eeprom2ramMenuItem.setName("eeprom2ramMenuItem"); // NOI18N
+        eeprom2ramMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                eeprom2ramMenuItemActionPerformed(evt);
+            }
+        });
         memoryMenu.add(eeprom2ramMenuItem);
 
         ToolsMenu.add(memoryMenu);
@@ -711,21 +726,21 @@ public class PRM80X0View extends FrameView {
 
     private void channelManagerMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_channelManagerMenuItemActionPerformed
             JFrame mainFrame = PRM80X0App.getApplication().getMainFrame();
-            ChannelManager cm = new ChannelManager(mainFrame, true, this.vdf.getPRMControler().getChannels());
-            cm.setLocationRelativeTo(mainFrame);
-            cm.setVisible(true);
-            if (cm.isChannelListValid()) {
             try {
-                this.vdf.getPRMControler().setChannels(cm.getChannelList());
-                this.vdf.reset();
-                this.vdf.setCurrentChannel(0);
-                updateValues();
+                ChannelManager cm = new ChannelManager(mainFrame, true, this.vdf.getPRMControler().getChannels());
+                cm.setLocationRelativeTo(mainFrame);
+                cm.setVisible(true);
+                if (cm.isChannelListValid()) {
+                    this.vdf.getPRMControler().setChannels(cm.getChannelList());
+                    this.vdf.reset();
+                    this.vdf.setCurrentChannel(0);
+                    updateValues();
+                }
             } catch (CommunicationException ex) {
                 this.disconnectMenuItem.setEnabled(false);
                 this.connectMenuItem.setEnabled(true);
                 JOptionPane.showMessageDialog(this.getComponent(), "Erreur de connexion : "+ex.getMessage(), "Erreur de connexion", JOptionPane.ERROR_MESSAGE);
                 Logger.getLogger(PRM80X0View.class.getName()).log(Level.WARNING, null, ex);
-            }
             }
     }//GEN-LAST:event_channelManagerMenuItemActionPerformed
 
@@ -847,17 +862,44 @@ private void resetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN
         } catch (CommunicationException ex) {
             this.disconnectMenuItem.setEnabled(false);
             this.connectMenuItem.setEnabled(true);
-            JOptionPane.showMessageDialog(this.getComponent(), "Erreur de connexion : "+ex.getMessage(), "Erreur de connexion", JOptionPane.ERROR_MESSAGE);
             Logger.getLogger(PRM80X0View.class.getName()).log(Level.WARNING, null, ex);
+            JOptionPane.showMessageDialog(this.getComponent(), "Erreur de connexion : "+ex.getMessage(), "Erreur de connexion", JOptionPane.ERROR_MESSAGE);
         }
 }//GEN-LAST:event_resetMenuItemActionPerformed
 
 private void configurationMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configurationMenuItemActionPerformed
     JFrame mainFrame = PRM80X0App.getApplication().getMainFrame();
-        ConfigurationDialog cd = new ConfigurationDialog(mainFrame, true);
+        ConfigurationDialog cd = new ConfigurationDialog(mainFrame, this.vdf);
         cd.setLocationRelativeTo(mainFrame);
         cd.setVisible(true);
 }//GEN-LAST:event_configurationMenuItemActionPerformed
+
+private void ram2eepromMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ram2eepromMenuItemActionPerformed
+        try {
+            this.vdf.getPRMControler().RAM2EEPROM();
+        } catch (CommunicationException ex) {
+            Logger.getLogger(PRM80X0View.class.getName()).log(Level.WARNING, null, ex);
+            JOptionPane.showMessageDialog(this.getComponent(), "Erreur de connexion : "+ex.getMessage(), "Erreur de connexion", JOptionPane.ERROR_MESSAGE);
+        }
+}//GEN-LAST:event_ram2eepromMenuItemActionPerformed
+
+private void eeprom2ramMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eeprom2ramMenuItemActionPerformed
+        try {
+            this.vdf.getPRMControler().EEPROM2RAM();
+        } catch (CommunicationException ex) {
+            Logger.getLogger(PRM80X0View.class.getName()).log(Level.WARNING, null, ex);
+            JOptionPane.showMessageDialog(this.getComponent(), "Erreur de connexion : "+ex.getMessage(), "Erreur de connexion", JOptionPane.ERROR_MESSAGE);
+        }
+}//GEN-LAST:event_eeprom2ramMenuItemActionPerformed
+
+private void razMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_razMenuItemActionPerformed
+        try {
+            this.vdf.getPRMControler().reloadRAM();
+        } catch (CommunicationException ex) {
+            Logger.getLogger(PRM80X0View.class.getName()).log(Level.WARNING, null, ex);
+            JOptionPane.showMessageDialog(this.getComponent(), "Erreur de connexion : "+ex.getMessage(), "Erreur de connexion", JOptionPane.ERROR_MESSAGE);
+        }
+}//GEN-LAST:event_razMenuItemActionPerformed
     private void disconnect() {
         try {
             this.disconnectMenuItem.setEnabled(false);

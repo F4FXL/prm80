@@ -40,12 +40,13 @@ public class DummyControler implements Controler{
     private int pllRefCounter;
     private int rxFreq;
     private int txFreq;
+    private int scanSpeed = 10;
 
     private MemoryImage image;
     
     @Override
     public int connectPRM(String port) {        
-        image = new MemoryImage();
+        image = new MemoryImageV3();
         init();
         this.resetPRM();        
         this.connected = true;
@@ -80,26 +81,26 @@ public class DummyControler implements Controler{
 
     @Override
     public int readSquelch() {
-        return this.image.getRamData(MemoryImage.RAM_ADRESS_SQUELCH);
+        return this.image.getRamData(MemoryImageV3.RAM_ADRESS_SQUELCH);
     }
 
     @Override
     public void writeSquelch(int level) {
         assert level > 15;
-        this.image.setRamData(MemoryImage.RAM_ADRESS_SQUELCH, (byte) level);
+        this.image.setRamData(MemoryImageV3.RAM_ADRESS_SQUELCH, (byte) level);
     }
 
     @Override
     public int getCurrentChannel() {
-        return this.image.getRamData(MemoryImage.RAM_ADRESS_CHAN);
+        return this.image.getRamData(MemoryImageV3.RAM_ADRESS_CHAN);
     }
 
     @Override
     public void setCurrentChannel(int channel) {
-        assert channel > this.image.getEepromData(MemoryImage.RAM_ADRESS_MAX_CHAN);
-        this.image.setRamData(MemoryImage.RAM_ADRESS_CHAN, (byte) channel);
+        assert channel > this.image.getEepromData(MemoryImageV3.RAM_ADRESS_MAX_CHAN);
+        this.image.setRamData(MemoryImageV3.RAM_ADRESS_CHAN, (byte) channel);
         
-        int eepromPos = channel*2 + MemoryImage.RAM_AREA_ADRESS_FREQ * 256;
+        int eepromPos = channel*2 + MemoryImageV3.RAM_AREA_ADRESS_FREQ * 256;
         
         byte wordHi = this.image.getRamData(eepromPos+1);
         byte wordLo = this.image.getRamData(eepromPos);
@@ -130,7 +131,7 @@ public class DummyControler implements Controler{
 
     @Override
     public void resetPRM() {                
-        this.setCurrentChannel(this.image.getRamData(MemoryImage.RAM_ADRESS_CHAN));
+        this.setCurrentChannel(this.image.getRamData(MemoryImageV3.RAM_ADRESS_CHAN));
     }
 
     @Override
@@ -140,7 +141,7 @@ public class DummyControler implements Controler{
 
     @Override
     public int getMaxChan() {
-        return this.image.getRamData(MemoryImage.RAM_ADRESS_MAX_CHAN);
+        return this.image.getRamData(MemoryImageV3.RAM_ADRESS_MAX_CHAN);
     }
 
     @Override
@@ -176,15 +177,15 @@ public class DummyControler implements Controler{
     
     private void loadVirtualEEprom(ArrayList<Integer> array) {
         for(int i= 0; i < array.size(); i++) {
-            int eepromPos = i*2 + MemoryImage.RAM_AREA_ADRESS_FREQ*256;
+            int eepromPos = i*2 + MemoryImageV3.RAM_AREA_ADRESS_FREQ*256;
             int pllWord = array.get(i) / 12500;
             byte wordHi = (byte) (pllWord / 256);
             byte wordLo = (byte) (pllWord - (wordHi * 256) );
             this.image.setEepromData(eepromPos, wordLo);
             this.image.setEepromData(eepromPos+1, wordHi);
         }
-        this.image.setEepromData(MemoryImage.RAM_ADRESS_MAX_CHAN, (byte) (array.size()-1));        
-        this.image.setEepromData(MemoryImage.RAM_ADRESS_SQUELCH, (byte) 5);
+        this.image.setEepromData(MemoryImageV3.RAM_ADRESS_MAX_CHAN, (byte) (array.size()-1));
+        this.image.setEepromData(MemoryImageV3.RAM_ADRESS_SQUELCH, (byte) 5);
     }
 
     @Override
@@ -210,15 +211,15 @@ public class DummyControler implements Controler{
     @Override
     public ChannelList getChannels() {
         ChannelList list = new ChannelList();
-        int maxChan = this.image.getRamData(MemoryImage.RAM_ADRESS_MAX_CHAN);
+        int maxChan = this.image.getRamData(MemoryImageV3.RAM_ADRESS_MAX_CHAN);
         for (int i= 0; i <= maxChan; i++) {
-            int ramPos = i*2 + MemoryImage.RAM_AREA_ADRESS_FREQ*256;
+            int ramPos = i*2 + MemoryImageV3.RAM_AREA_ADRESS_FREQ*256;
             byte wordHi = this.image.getRamData(ramPos+1);
             byte wordLo = this.image.getRamData(ramPos);
             int pllWord = ((wordHi & 0xFF) << 8) + (wordLo & 0xFF);
             String freq = Integer.toString(pllWord * this.getPLLStep());
             freq = freq.substring(0, freq.length()-6) + "." + freq.substring(freq.length()-6);
-            int statePos = i + MemoryImage.RAM_AREA_ADRESS_STATE*256;
+            int statePos = i + MemoryImageV3.RAM_AREA_ADRESS_STATE*256;
             byte state = this.image.getRamData(statePos);
             String shift = "";
             if ((state & 1) == 1) {
@@ -237,13 +238,13 @@ public class DummyControler implements Controler{
     @Override
     public void setChannels(ChannelList list) {
         for (int i= 0; i < list.countChannel(); i++) {
-            int ramPos = i*2 + MemoryImage.RAM_AREA_ADRESS_FREQ*256;
+            int ramPos = i*2 + MemoryImageV3.RAM_AREA_ADRESS_FREQ*256;
             int pllWord = list.getChannel(i).getIntFrequency()  / this.getPLLStep();
             byte wordHi = (byte) (pllWord / 256);
             byte wordLo = (byte) (pllWord - (wordHi * 256) );
             this.image.setRamData(ramPos, wordLo);
             this.image.setRamData(ramPos+1, wordHi);     
-            int statePos = i + MemoryImage.RAM_AREA_ADRESS_STATE*256;
+            int statePos = i + MemoryImageV3.RAM_AREA_ADRESS_STATE*256;
             byte state = 0;
             if (list.getChannel(i).isShift()) {
                 state += 1;
@@ -252,7 +253,7 @@ public class DummyControler implements Controler{
             }
             this.image.setRamData(statePos,state);
         }
-        this.image.setRamData(MemoryImage.RAM_ADRESS_MAX_CHAN, (byte)(list.countChannel()-1));
+        this.image.setRamData(MemoryImageV3.RAM_ADRESS_MAX_CHAN, (byte)(list.countChannel()-1));
     }
 
     @Override
@@ -270,7 +271,7 @@ public class DummyControler implements Controler{
         freq.add(144100000);
         freq.add(145600000);
         freq.add(145800000);
-        this.image.setRamData(MemoryImage.RAM_ADRESS_CHAN, (byte) 0);
+        this.image.setRamData(MemoryImageV3.RAM_ADRESS_CHAN, (byte) 0);
         this.loadVirtualEEprom(freq);
         
         this.reloadRAM();
@@ -284,6 +285,21 @@ public class DummyControler implements Controler{
     @Override
     public void setTxFrequencyShift(int frequency) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public int getScanSpeed() throws CommunicationException {
+        return this.scanSpeed;
+    }
+
+    @Override
+    public void setScanSpeed(int speed) throws CommunicationException {
+        this.scanSpeed = speed;
+    }
+
+    @Override
+    public int getPRMType() throws CommunicationException {
+        return DummyControler.PRM8060;
     }
 
 }

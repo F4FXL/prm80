@@ -201,13 +201,13 @@ public interface Controler {
      * Obtain a copy of the list of channels
      * @return list of channels
      */
-    public ChannelList getChannels();
+    public ChannelList getChannels() throws CommunicationException;
     
     /**
      * Set the list of channels
      * @return list of channels
      */
-    public void setChannels(ChannelList list);
+    public void setChannels(ChannelList list) throws CommunicationException;
     
     /**
      * Set listener called when state change
@@ -225,10 +225,32 @@ public interface Controler {
      * Get the PRM80 shift
      * @return TX shift frequency in Hertz
      */
-    public int getTxFrequencyShift();
+    public int getTxFrequencyShift() throws CommunicationException;
     /**
      * Set the default frequency shift
      * @param frequency TX Frequency in Hertz
      */
-    public void setTxFrequencyShift(int frequency);
+    public void setTxFrequencyShift(int frequency) throws CommunicationException;
+
+    /**
+     * Get the current scanner speed. Time in ms to wait on each channel before jumping to the next one
+     * if squelch is not open
+     * @return Wait time in ms
+     */
+    public int getScanSpeed() throws CommunicationException;
+
+    /**
+     * Set the current scanner speed. Time in ms to wait on each channel before jumping to the next one
+     * if squelch is not open
+     * @param speed Wait time in ms
+     */
+    public void setScanSpeed(int speed) throws CommunicationException;
+
+    /**
+     * Get PRM type constant
+     * @return PRM type
+     * @throws f4fez.prm80x0.Controler.CommunicationException
+     */
+    public int getPRMType() throws CommunicationException;
+
 }
