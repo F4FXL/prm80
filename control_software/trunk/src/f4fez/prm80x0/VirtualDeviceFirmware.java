@@ -42,6 +42,7 @@ public class VirtualDeviceFirmware {
         memChan = this.controler.getCurrentChannel();
         if (this.vfoMode) {
             this.controler.setRxPLLFrequecny(this.controler.getRxPLLFrequency()+this.controler.getPLLStep());
+            this.controler.setTxPLLFrequecny(this.controler.getTxPLLFrequency()+this.controler.getPLLStep());
         }
         else {
             memChan++;
@@ -55,6 +56,7 @@ public class VirtualDeviceFirmware {
         memChan = this.controler.getCurrentChannel();
         if (this.vfoMode) {
             this.controler.setRxPLLFrequecny(this.controler.getRxPLLFrequency()-this.controler.getPLLStep());
+            this.controler.setTxPLLFrequecny(this.controler.getTxPLLFrequency()-this.controler.getPLLStep());
         }
         else {
             memChan--;

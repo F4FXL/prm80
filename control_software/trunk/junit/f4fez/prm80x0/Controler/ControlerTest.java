@@ -443,4 +443,72 @@ public abstract class ControlerTest {
         instance.setChannels(oldList);        
     }
 
+    /**
+     * Test of setPRMStateChangeListener method, of class Controler.
+     */
+    /*@Test
+    public void testSetPRMStateChangeListener() {
+        fail("The test case is a prototype.");
+    }*/
+
+    /**
+     * Test of isConnected method, of class Controler.
+     */
+    @Test
+    public void testIsConnected() throws Exception {
+        System.out.println("getTxFrequencyShift");
+        instance.connectPRM(port);
+        if(instance.isConnected() == false) {
+            fail("PRM not connected");
+        }
+    }
+
+    /**
+     * Test of getTxFrequencyShift method, of class Controler.
+     */
+    @Test
+    public void testGetTxFrequencyShift() throws Exception {
+        System.out.println("getTxFrequencyShift");
+        instance.connectPRM(port);
+        int result = instance.getTxFrequencyShift();
+        System.out.println("   Frequency shift : "+ Integer.toString(result));
+    }
+
+    /**
+     * Test of setTxFrequencyShift method, of class Controler.
+     */
+    @Test
+    public void testSetTxFrequencyShift() throws Exception {
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of getScanSpeed method, of class Controler.
+     */
+    @Test
+    public void testGetScanSpeed() throws Exception {
+        System.out.println("getScanSpeed");
+        instance.connectPRM(port);
+        int result = instance.getScanSpeed();
+        System.out.println("   Scan speed : "+ Integer.toString(result));
+    }
+
+    /**
+     * Test of setScanSpeed method, of class Controler.
+     */
+    @Test
+    public void testSetScanSpeed() throws Exception {
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of getPRMType method, of class Controler.
+     */
+    @Test
+    public void testGetPRMType() throws Exception {
+        System.out.println("getPRMType");
+        instance.connectPRM(port);
+        int result = instance.getPRMType();
+        System.out.println("   PRM80 type : "+ Integer.toString(result));
+    }
 }

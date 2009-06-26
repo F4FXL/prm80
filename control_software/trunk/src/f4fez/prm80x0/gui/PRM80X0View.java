@@ -44,6 +44,7 @@ import f4fez.prm80x0.Controler.PRMStateChangeListener;
 import f4fez.prm80x0.Controler.SerialControler;
 import f4fez.prm80x0.Controler.TcpControler;
 import f4fez.prm80x0.gui.serialterminal.TerminalDialog;
+import java.awt.event.MouseEvent;
 import javax.swing.JFileChooser;
 
 
@@ -272,12 +273,22 @@ public class PRM80X0View extends FrameView {
         freqLabel.setText(resourceMap.getString("freqLabel.text")); // NOI18N
         freqLabel.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
         freqLabel.setName("freqLabel"); // NOI18N
+        freqLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                freqLabelMouseClicked(evt);
+            }
+        });
         jPanel1.add(freqLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 160, 30));
 
         chanLabel.setForeground(resourceMap.getColor("chanLabel.foreground")); // NOI18N
         chanLabel.setText(resourceMap.getString("chanLabel.text")); // NOI18N
         chanLabel.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
         chanLabel.setName("chanLabel"); // NOI18N
+        chanLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                chanLabelMouseClicked(evt);
+            }
+        });
         jPanel1.add(chanLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 10, 50, 30));
 
         hpLabel.setIcon(resourceMap.getIcon("hpLabel.icon")); // NOI18N
@@ -295,6 +306,11 @@ public class PRM80X0View extends FrameView {
         txFreqLabel.setText(resourceMap.getString("txFreqLabel.text")); // NOI18N
         txFreqLabel.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
         txFreqLabel.setName("txFreqLabel"); // NOI18N
+        txFreqLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                freqLabelMouseClicked(evt);
+            }
+        });
         jPanel1.add(txFreqLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, 160, 20));
 
         mainPanel.add(jPanel1);
@@ -357,7 +373,7 @@ public class PRM80X0View extends FrameView {
                 squelchSpinnerStateChanged(evt);
             }
         });
-        jPanel2.add(squelchSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(85, 30, 60, 20));
+        jPanel2.add(squelchSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(85, 30, 60, -1));
 
         upButton.setText(resourceMap.getString("upButton.text")); // NOI18N
         upButton.setName("upButton"); // NOI18N
@@ -584,7 +600,7 @@ public class PRM80X0View extends FrameView {
             .add(statusPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(statusMessageLabel)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 322, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 318, Short.MAX_VALUE)
                 .add(progressBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(statusAnimationLabel)
@@ -900,6 +916,45 @@ private void razMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
             JOptionPane.showMessageDialog(this.getComponent(), "Erreur de connexion : "+ex.getMessage(), "Erreur de connexion", JOptionPane.ERROR_MESSAGE);
         }
 }//GEN-LAST:event_razMenuItemActionPerformed
+
+private void chanLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_chanLabelMouseClicked
+        try {
+            if (evt.getButton() == MouseEvent.BUTTON1) {
+                SelectChannelDialog d = new SelectChannelDialog(this.getFrame(), true);
+                d.setChannel(Integer.parseInt(this.vdf.getChannel()));
+                d.setVisible(true);
+                if (d.getChannel() != -1) {
+                    this.vdf.setCurrentChannel(d.getChannel());
+                    this.updateValues();
+                }
+            }
+        } catch (CommunicationException ex) {
+            Logger.getLogger(PRM80X0View.class.getName()).log(Level.WARNING, null, ex);
+            JOptionPane.showMessageDialog(this.getComponent(), "Erreur de connexion : "+ex.getMessage(), "Erreur de connexion", JOptionPane.ERROR_MESSAGE);
+        }
+
+}//GEN-LAST:event_chanLabelMouseClicked
+
+private void freqLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_freqLabelMouseClicked
+     try {
+            if (evt.getButton() == MouseEvent.BUTTON1) {
+                SelectFrequencyDialog d = new SelectFrequencyDialog(this.getFrame(), true);
+                d.setRxFrequency(this.vdf.getPRMControler().getRxPLLFrequency());
+                d.setVisible(true);
+                if (d.getRxFrequency() != -1) {
+                    this.vdf.getPRMControler().setRxPLLFrequecny(d.getRxFrequency());
+                    this.vdf.getPRMControler().setTxPLLFrequecny(d.getRxFrequency());
+                    this.vdf.setVfoMode(true);
+                    this.chanLabel.setVisible(false);
+                    this.vfoToggleButton.setSelected(true);
+                    this.updateValues();
+                }
+            }
+        } catch (CommunicationException ex) {
+            Logger.getLogger(PRM80X0View.class.getName()).log(Level.WARNING, null, ex);
+            JOptionPane.showMessageDialog(this.getComponent(), "Erreur de connexion : "+ex.getMessage(), "Erreur de connexion", JOptionPane.ERROR_MESSAGE);
+        }
+}//GEN-LAST:event_freqLabelMouseClicked
     private void disconnect() {
         try {
             this.disconnectMenuItem.setEnabled(false);
