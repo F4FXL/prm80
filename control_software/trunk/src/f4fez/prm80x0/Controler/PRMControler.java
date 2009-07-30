@@ -20,6 +20,7 @@ public abstract class PRMControler implements Controler{
     protected int majorFirmwareVersion;
     protected int minorFirmwareVersion;
     protected int prmType;
+    protected int prmFreqCode;
     private int pllStep; 
     protected ArrayList<SerialListener> serialListeners;
     protected Thread updateThread;

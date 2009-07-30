@@ -94,7 +94,13 @@ public class TcpControler extends PRMControler{
             else {
                 this.disconnectPRM();
                 throw new SerialPortException("Unknow PRM80 device");
-            }                
+            }
+
+            this.prmFreqCode = Integer.parseInt(ident.substring(13, 16));
+            if (this.prmFreqCode != 144 && this.prmFreqCode != 430) {
+                this.disconnectPRM();
+                throw new SerialPortException("Unknow PRM80 frequency code");
+            }
             this.majorFirmwareVersion = Integer.parseInt(ident.substring(9, 10));
             this.minorFirmwareVersion = Integer.parseInt(ident.substring(11, 12));                        
             this.connected = true;

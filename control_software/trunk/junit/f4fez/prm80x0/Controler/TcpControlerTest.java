@@ -14,7 +14,7 @@ public class TcpControlerTest extends ControlerTest {
     @Override
     public void setUp() {
         this.instance = new TcpControler();        
-        this.port = "prm80://192.168.4.4";
+        this.port = "prm80://192.168.1.101";
     }
 
 }
