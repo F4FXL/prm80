@@ -12,5 +12,8 @@
                 <root id="test.junit.dir"/>
             </test-roots>
         </data>
+        <swingapp xmlns="http://www.netbeans.org/ns/form-swingapp/1">
+            <application-class name="f4fez.prm80x0.PRM80X0App"/>
+        </swingapp>
     </configuration>
 </project>

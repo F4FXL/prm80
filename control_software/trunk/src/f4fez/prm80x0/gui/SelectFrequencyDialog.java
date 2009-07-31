@@ -23,6 +23,7 @@ public class SelectFrequencyDialog extends javax.swing.JDialog {
     public SelectFrequencyDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        this.getRootPane().setDefaultButton(okButton);
     }
 
     /** This method is called from within the constructor to
@@ -94,10 +95,15 @@ public class SelectFrequencyDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_cancelButtonActionPerformed
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
-        if (this.rxFrequencyTextField.getText().matches("^[0-9]{3}\\.[0-9]{4}$")) {
-            Float ff = Float.parseFloat(this.rxFrequencyTextField.getText().substring(4));
+        if (this.rxFrequencyTextField.getText().matches("^[0-9]{3}\\.[0-9]{1,4}$")) {
+            String val = this.rxFrequencyTextField.getText();
+            while (val.length() < 8) {
+                val = val.concat("0");
+            }
+
+            Float ff = Float.parseFloat(val.substring(4));
             if (ff % 12.5f == 0 ) {
-                this.rxFrequency = Integer.parseInt(this.rxFrequencyTextField.getText().replace(".", "")+"00");
+                this.rxFrequency = Integer.parseInt(val.replace(".", "")+"00");
                 this.setVisible(false);
             }
             else {

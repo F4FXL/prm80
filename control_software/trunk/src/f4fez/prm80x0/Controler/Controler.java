@@ -35,6 +35,15 @@ public interface Controler {
      * PRM 8070 identification code
      */
     public final static int PRM8070 = 2;
+
+    /**
+     * VHF PRM code frequency
+     */
+    public final static int FREQ144 = 144;
+    /**
+     * UHF PRM ocde frequency
+     */
+    public final static int FREQ430 = 430;
     
     public final static int LOCK_NONE = 0;
     public final static int LOCK_KEYS = 1;
@@ -253,4 +262,10 @@ public interface Controler {
      */
     public int getPRMType() throws CommunicationException;
 
+    /**
+     * Get PRM the PRM frequency code
+     * @return PRM frequency code
+     * @throws f4fez.prm80x0.Controler.CommunicationException
+     */
+    public int getPRMFrequencyCode() throws CommunicationException;
 }

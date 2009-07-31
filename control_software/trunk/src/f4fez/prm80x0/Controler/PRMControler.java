@@ -116,7 +116,13 @@ public abstract class PRMControler implements Controler{
      * @param txFreq The TX frequency
      */
     protected synchronized void setPLLFrequencies(int rxFreq, int txFreq) {
-        int rxfreq = (rxFreq + DummyControler.IF) / this.getPLLStep();
+        int rxfreq;
+        if (this.prmFreqCode == PRMControler.FREQ144) {
+            rxfreq = (rxFreq + Controler.IF) / this.getPLLStep();
+        }
+        else {
+            rxfreq = (rxFreq - Controler.IF) / this.getPLLStep();
+        }
         int txfreq = (txFreq) / this.getPLLStep();
         this.send("r");
         this.waitChar(':', PRMControler.serialTimeout);
@@ -476,7 +482,13 @@ public abstract class PRMControler implements Controler{
             try {
                 if (stateLine != null && stateLine.length() == 23 && !stateLine.equals(this.holdStateString)) {
                     int freq = Integer.parseInt(stateLine.substring(12, 16), 16);
-                    this.rxFreq = freq*this.getPLLStep()-Controler.IF;
+                    if (this.prmFreqCode == PRMControler.FREQ144) {
+                        this.rxFreq = freq*this.getPLLStep()-Controler.IF;
+                    }
+                    else {
+                        this.rxFreq = freq*this.getPLLStep()+Controler.IF;
+                    }
+                    
                     freq = Integer.parseInt(stateLine.substring(16, 20), 16);
                     this.txFrreq = freq*this.getPLLStep();
                     this.volume =  (255-Integer.parseInt(stateLine.substring(8, 10), 16)) >> 4;
@@ -865,5 +877,10 @@ public abstract class PRMControler implements Controler{
     @Override
     public int getPRMType() throws CommunicationException {
         return this.prmType;
+    }
+
+    @Override
+    public int getPRMFrequencyCode() throws CommunicationException {
+        return this.prmFreqCode;
     }
 }

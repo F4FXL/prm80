@@ -302,4 +302,9 @@ public class DummyControler implements Controler{
         return DummyControler.PRM8060;
     }
 
+    @Override
+    public int getPRMFrequencyCode() throws CommunicationException {
+        return 144;
+    }
+
 }

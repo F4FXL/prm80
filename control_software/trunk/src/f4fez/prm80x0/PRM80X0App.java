@@ -19,6 +19,7 @@
 package f4fez.prm80x0;
 
 import f4fez.prm80x0.gui.PRM80X0View;
+import jargs.gnu.CmdLineParser;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 
@@ -54,12 +55,59 @@ public class PRM80X0App extends SingleFrameApplication {
      * Main method launching the application.
      */
     public static void main(String[] args) {
-        if (args.length > 0) {
-            if (args[0].equals("server")) {
-                    f4fez.prm80x0.server.Server.runServerFromShell(args);
-            }
-        }            
+        analyseCommandLine(args);
+
+        if (CmdLineOptions.getInstance().isServerMode()) {
+                f4fez.prm80x0.server.Server.runServerConsoleMode(CmdLineOptions.getInstance().getServerPort());
+        }
         else
             launch(PRM80X0App.class, args);
+    }
+
+    private static void analyseCommandLine(String[] args) {
+        CmdLineParser parser = new CmdLineParser();
+        CmdLineParser.Option help = parser.addBooleanOption('h', "help");
+        CmdLineParser.Option debug = parser.addBooleanOption('d', "debug");
+        CmdLineParser.Option server = parser.addIntegerOption('s', "server");
+
+        try {
+            parser.parse(args);
+        }
+        catch ( CmdLineParser.OptionException e ) {
+            System.err.println(e.getMessage());
+            printUsage();
+            System.exit(2);
+        }
+
+        Boolean helpValue = (Boolean)parser.getOptionValue(help);
+        if (helpValue != null && helpValue) {
+            printUsage();
+            System.exit(0);
+        }
+
+        Boolean debugValue = (Boolean)parser.getOptionValue(debug);
+        if (debugValue != null && debugValue) {
+            CmdLineOptions.getInstance().setDebug(true);
+        }
+        else {
+            CmdLineOptions.getInstance().setDebug(false);
+        }
+
+        Integer serverValue = (Integer) parser.getOptionValue(server);
+        if (serverValue == null) {
+            CmdLineOptions.getInstance().setServerMode(false);
+        }
+        else {
+            CmdLineOptions.getInstance().setServerMode(true);
+            CmdLineOptions.getInstance().setServerPort(serverValue);
+        }
+    }
+
+    private static void printUsage() {
+        System.err.println(
+            "Usage: prm80 [Options]\n\nOptions:\n" +
+            "  -h,   --help           Print this help message\n" +
+            "  -s,   --server=PORT    Server mode. Lister on PORT number\n" +
+            "  -d,   --debug          Set debug mode\n");
     }
 }

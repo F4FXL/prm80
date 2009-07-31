@@ -142,8 +142,10 @@ public class PRM80X0View extends FrameView {
                 this.freqLabel.setFont(lcdFont);
                 this.chanLabel.setFont(lcdFont);
                 lcdFontStream = this.getClass().getClassLoader().getResourceAsStream("f4fez/prm80x0/gui/resources/lcd.ttf");
-                lcdFont = Font.createFont(Font.TRUETYPE_FONT, lcdFontStream).deriveFont(20f);
+                lcdFont = Font.createFont(Font.TRUETYPE_FONT, lcdFontStream).deriveFont(24f);
                 this.txFreqLabel.setFont(lcdFont);
+                this.infoLabel.setFont(lcdFont);
+
             } catch (Exception ex) {
                 Logger.getLogger(PRM80X0View.class.getName()).log(Level.SEVERE, null, ex);
                 JOptionPane.showMessageDialog(this.getFrame(), ex.getMessage());
@@ -175,6 +177,7 @@ public class PRM80X0View extends FrameView {
         this.freqLabel.setVisible(enable);
         this.txFreqLabel.setVisible(enable);
         this.chanLabel.setVisible(enable && !this.vdf.isVfoMode());
+        this.infoLabel.setVisible(enable);
         this.channelManagerMenuItem.setEnabled(enable);
         if (!enable) {
             this.hpLabel.setVisible(false);
@@ -186,7 +189,7 @@ public class PRM80X0View extends FrameView {
     }
     
     private void setVisibleExpertControls(boolean enable) {
-        this.connectVirtualMenuItem.setVisible(enable);
+        this.connectVirtualMenuItem.setVisible(enable & CmdLineOptions.getInstance().isDebug());
         this.resetMenuItem.setVisible(enable);
         this.razMenuItem.setVisible(enable);
         this.memoryMenu.setVisible(enable);
@@ -214,6 +217,7 @@ public class PRM80X0View extends FrameView {
         hpLabel = new javax.swing.JLabel();
         lpLabel = new javax.swing.JLabel();
         txFreqLabel = new javax.swing.JLabel();
+        infoLabel = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         vfoToggleButton = new javax.swing.JToggleButton();
         memToggleButton = new javax.swing.JToggleButton();
@@ -312,6 +316,11 @@ public class PRM80X0View extends FrameView {
             }
         });
         jPanel1.add(txFreqLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, 160, 20));
+
+        infoLabel.setForeground(resourceMap.getColor("infoLabel.foreground")); // NOI18N
+        infoLabel.setText(resourceMap.getString("infoLabel.text")); // NOI18N
+        infoLabel.setName("infoLabel"); // NOI18N
+        jPanel1.add(infoLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 70, 390, 20));
 
         mainPanel.add(jPanel1);
 
@@ -978,6 +987,14 @@ private void freqLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:e
         
         this.hpLabel.setVisible(this.vdf.isHighPower());
         this.lpLabel.setVisible(!this.vdf.isHighPower());
+
+        if (this.vdf.isPLLLocked()) {
+            this.infoLabel.setText("");
+        }
+        else {
+            this.infoLabel.setText("-- Synthesizer ERROR --");
+        }
+
     }
     
     public Option getConfiguration() {
@@ -1000,6 +1017,7 @@ private void freqLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:e
     private javax.swing.JMenuItem exportA51MenuItem;
     private javax.swing.JLabel freqLabel;
     private javax.swing.JLabel hpLabel;
+    private javax.swing.JLabel infoLabel;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JSeparator jSeparator1;

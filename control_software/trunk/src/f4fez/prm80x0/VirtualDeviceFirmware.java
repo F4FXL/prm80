@@ -136,4 +136,8 @@ public class VirtualDeviceFirmware {
         this.vfoMode = false;
         this.controler.setCurrentChannel(chan);
     }
+
+    public boolean isPLLLocked() throws CommunicationException {
+        return this.controler.isPllLocked();
+    }
 }

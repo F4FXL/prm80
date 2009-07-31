@@ -35,11 +35,7 @@ public class Server implements Runnable {
     }
     
 
-    public static void runServerFromShell(String[] args) {
-        if (args.length < 2) {
-            System.out.println("Server command line call is : server <port> or server <port> <serial port>");
-            System.exit(1);
-        }
+    public static void runServerConsoleMode(int port) {
         ServerEventListener eventListener;
         eventListener = new ServerEventListener() {
 
@@ -71,7 +67,7 @@ public class Server implements Runnable {
         
         System.out.println("Server started");        
         try {
-            new Server(eventListener, Integer.parseInt(args[1]), "/dev/ttyS0");
+            new Server(eventListener, port, "/dev/ttyS0");
         } catch (ServerException ex) {
             System.out.println("Error : "+ex.getMessage());
         }
